@@ -7,7 +7,7 @@
 #include <indigo/indigo_xml.h>
 
 #define TEXT_LEN_TO_PRINT 80
-#define CCD_SIMULATOR "CCD Imager Simulator @ indigo_1"
+
 
 static bool save_blobs = false;
 static bool print_verbose = false;
@@ -17,3 +17,5 @@ static int count = 5;
 static bool reducir_print = true;
 
 void print_property_list(indigo_property *property, const char *message);
+
+void conecta_n_disp(int, indigo_server_entry**);

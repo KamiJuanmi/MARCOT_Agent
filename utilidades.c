@@ -134,3 +134,13 @@ void print_property_list(indigo_property *property, const char *message)
     if (print_verbose)
         printf("\n");
 }
+
+void conecta_n_disp(int n, indigo_server_entry **server){
+    int port_ini = 8000;
+    char host[9] = "indigo_x";
+    for(int i = 0; i<n; i++)
+    {
+        host[7] = i + '0';
+        indigo_connect_server(host, host, port_ini+i, server);
+    }
+}

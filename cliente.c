@@ -1,8 +1,10 @@
 #include "utilidades.h"
 
+#define CCD_SIMULATOR "CCD Imager Simulator @ indigo_1"
+#define CCD_SIMULATOR2 "CCD Imager Simulator @ indigo_0"
+
 indigo_property *propiedadConnect = NULL;
 indigo_property *propiedadExposicion = NULL;
-
 
 static indigo_result my_attach(indigo_client *client)
 {
@@ -18,7 +20,7 @@ static indigo_result my_define_property(indigo_client *client,
                                         indigo_device *device, indigo_property *property, const char *message)
 {
 
-    if (strcmp(property->device, CCD_SIMULATOR))
+    if (strcmp(property->device, CCD_SIMULATOR) && strcmp(property->device, CCD_SIMULATOR2))
     {
         return INDIGO_OK;
     }
@@ -35,18 +37,20 @@ static indigo_result my_define_property(indigo_client *client,
         propiedadExposicion = property;
     }
 
-    if (!strcmp(property->name, CCD_IMAGE_PROPERTY_NAME)) {
-		if (device->version >= INDIGO_VERSION_2_0)
-			indigo_enable_blob(client, property, INDIGO_ENABLE_BLOB_URL);
-		else
-			indigo_enable_blob(client, property, INDIGO_ENABLE_BLOB_ALSO);
-	}
+    if (!strcmp(property->name, CCD_IMAGE_PROPERTY_NAME))
+    {
+        if (device->version >= INDIGO_VERSION_2_0)
+            indigo_enable_blob(client, property, INDIGO_ENABLE_BLOB_URL);
+        else
+            indigo_enable_blob(client, property, INDIGO_ENABLE_BLOB_ALSO);
+    }
 
-    if (!strcmp(property->name, CCD_IMAGE_FORMAT_PROPERTY_NAME)) {
-		static const char * items[] = { CCD_IMAGE_FORMAT_JPEG_ITEM_NAME };
-		static bool values[] = { true };
-		indigo_change_switch_property(client, CCD_SIMULATOR, CCD_IMAGE_FORMAT_PROPERTY_NAME, 1, items, values);
-	}
+    if (!strcmp(property->name, CCD_IMAGE_FORMAT_PROPERTY_NAME))
+    {
+        static const char *items[] = {CCD_IMAGE_FORMAT_JPEG_ITEM_NAME};
+        static bool values[] = {true};
+        indigo_change_switch_property(client, CCD_SIMULATOR, CCD_IMAGE_FORMAT_PROPERTY_NAME, 1, items, values);
+    }
 
     return INDIGO_OK;
 }
@@ -55,7 +59,7 @@ static indigo_result my_update_property(indigo_client *client,
                                         indigo_device *device, indigo_property *property, const char *message)
 {
 
-    if (strcmp(property->device, CCD_SIMULATOR))
+    if (strcmp(property->device, CCD_SIMULATOR) && strcmp(property->device, CCD_SIMULATOR2))
     {
         return INDIGO_OK;
     }
@@ -72,26 +76,29 @@ static indigo_result my_update_property(indigo_client *client,
         propiedadExposicion = property;
     }
 
-    if (!strcmp(property->name, CCD_IMAGE_PROPERTY_NAME)) {
-		/* URL blob transfer is available only in client - server setup.
-		   This will never be called in case of a client loading a driver. */
-		if (*property->items[0].blob.url && indigo_populate_http_blob_item(&property->items[0]))
-			indigo_log("image URL received (%s, %d bytes)...", property->items[0].blob.url, property->items[0].blob.size);
+    if (!strcmp(property->name, CCD_IMAGE_PROPERTY_NAME))
+    {
+        /* URL blob transfer is available only in client - server setup.
+           This will never be called in case of a client loading a driver. */
+        if (*property->items[0].blob.url && indigo_populate_http_blob_item(&property->items[0]))
+            indigo_log("image URL received (%s, %d bytes)...", property->items[0].blob.url, property->items[0].blob.size);
 
-		if (property->items[0].blob.value) {
-			char name[32];
-			sprintf(name, "img_%02d.jpeg", count);
-			FILE *f = fopen(name, "wb");
-			fwrite(property->items[0].blob.value, property->items[0].blob.size, 1, f);
-			fclose(f);
-			indigo_log("image saved to %s...", name);
-			/* In case we have URL BLOB transfer we need to release the blob ourselves */
-			if (*property->items[0].blob.url) {
-				free(property->items[0].blob.value);
-				property->items[0].blob.value = NULL;
-			}
-		}
-	}
+        if (property->items[0].blob.value)
+        {
+            char name[32];
+            sprintf(name, "img_%02d.jpeg", count);
+            FILE *f = fopen(name, "wb");
+            fwrite(property->items[0].blob.value, property->items[0].blob.size, 1, f);
+            fclose(f);
+            indigo_log("image saved to %s...", name);
+            /* In case we have URL BLOB transfer we need to release the blob ourselves */
+            if (*property->items[0].blob.url)
+            {
+                free(property->items[0].blob.value);
+                property->items[0].blob.value = NULL;
+            }
+        }
+    }
 
     return INDIGO_OK;
 }
@@ -119,6 +126,23 @@ static indigo_client my_client = {
 
 int main(int argc, const char *argv[])
 {
+    int n_server;
+    if (argc < 2)
+    {
+        printf("Por favor vuelva a ejecutar \"./cliente <n_server>\"\n");
+        return 0;
+    }
+    else
+    {
+        const char *aux = argv[1];
+        if (aux[1] != '\0')
+        {
+            printf("Por favor vuelva a ejecutar \"./cliente <n_server>\", teniedo en cuenta que 0<n_server<10\n");
+            return 0;
+        }
+        n_server = (int)aux[0] - 48;
+    }
+
     indigo_start();
 
     // Para ver los mensajes de DEBUG en pantalla
@@ -127,10 +151,10 @@ int main(int argc, const char *argv[])
     indigo_attach_client(&my_client);
 
     indigo_server_entry *server;
-    indigo_connect_server("indigo_1", "indigo_1", 8000, &server);
+    conecta_n_disp(n_server, &server);
 
     printf("Esperando a propiedad connect\n");
-    
+
     while (propiedadConnect == NULL)
     {
         indigo_usleep(ONE_SECOND_DELAY);
@@ -138,6 +162,7 @@ int main(int argc, const char *argv[])
 
     printf("Ya he conseguido la propiedad connect\n");
     indigo_usleep(ONE_SECOND_DELAY);
+
     if (indigo_get_switch(propiedadConnect, CONNECTION_CONNECTED_ITEM_NAME))
     {
         printf("Ya estaba conectado\n");
@@ -161,7 +186,7 @@ int main(int argc, const char *argv[])
 
     static const char *items[] = {CCD_EXPOSURE_ITEM_NAME};
     static double values[] = {6.0};
-    indigo_change_number_property(&my_client, CCD_SIMULATOR, CCD_EXPOSURE_PROPERTY_NAME, 1, items, values);
+    indigo_change_number_property(&my_client, CCD_SIMULATOR2, CCD_EXPOSURE_PROPERTY_NAME, 1, items, values);
 
     indigo_usleep(10 * ONE_SECOND_DELAY);
 
