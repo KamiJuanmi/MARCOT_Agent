@@ -27,7 +27,7 @@ else
 	endif
 endif
 
-SRC = utilidades.c cliente.c 
+SRC = utilidades.c st_disp.c cliente.c 
 
 OBJ = $(SRC:.c=.o)
 

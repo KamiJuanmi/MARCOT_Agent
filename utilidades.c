@@ -69,14 +69,6 @@ void print_property_list(indigo_property *property, const char *message)
     {
         if (reducir_print)
         {
-
-            /*
-            Puesto que a esta funcion solo se le llama cuando es el CCD en el update, esto no hace falta, pero hay que tener cuidado si se cambia el orden
-            if (strcmp(property->device, CCD_SIMULATOR))
-            {
-                continue;
-            }
-            */
             if (strcmp(property->name, CCD_EXPOSURE_PROPERTY_NAME))
             {
                 continue;
@@ -135,12 +127,43 @@ void print_property_list(indigo_property *property, const char *message)
         printf("\n");
 }
 
-void conecta_n_disp(int n, indigo_server_entry **server){
+void conecta_n_disp(int n, indigo_server_entry **server)
+{
     int port_ini = 8000;
     char host[9] = "indigo_x";
-    for(int i = 0; i<n; i++)
+    for (int i = 0; i < n; i++)
     {
         host[7] = i + '0';
-        indigo_connect_server(host, host, port_ini+i, server);
+        indigo_connect_server(host, host, port_ini + i, server);
     }
+}
+
+bool es_interesante(const char *device_name)
+{
+    // Solamente por ahora nos va a interesar el dispositivo CCD Imager Simulator @ ...
+    if (device_name == NULL || device_name[0] == '\0' || strlen(device_name) < 20)
+    {
+        return false;
+    }
+    if (device_name[0] != 'C')
+    {
+        return false;
+    }
+    if (device_name[4] != 'I')
+    {
+        return false;
+    }
+    if (device_name[11] != 'S')
+    {
+        return false;
+    }
+    if (device_name[12] != 'i')
+    {
+        return false;
+    }
+    if (device_name[21] != '@')
+    {
+        return false;
+    }
+    return true;
 }

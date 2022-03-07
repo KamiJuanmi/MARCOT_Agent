@@ -1,10 +1,7 @@
 #include "utilidades.h"
+#include "st_disp.h"
 
-#define CCD_SIMULATOR "CCD Imager Simulator @ indigo_1"
-#define CCD_SIMULATOR2 "CCD Imager Simulator @ indigo_0"
-
-indigo_property *propiedadConnect = NULL;
-indigo_property *propiedadExposicion = NULL;
+#define CCD_SIMULATOR "CCD Imager Simulator @ indigo_4"
 
 static indigo_result my_attach(indigo_client *client)
 {
@@ -20,21 +17,29 @@ static indigo_result my_define_property(indigo_client *client,
                                         indigo_device *device, indigo_property *property, const char *message)
 {
 
-    if (strcmp(property->device, CCD_SIMULATOR) && strcmp(property->device, CCD_SIMULATOR2))
+    if (!es_interesante(property->device))
     {
         return INDIGO_OK;
+    }
+
+    struct Dispositivo *entrada = search(property->device);
+
+    if (entrada == NULL)
+    {
+        insert(property->device);
+        entrada = search(property->device);
     }
 
     print_property_list(property, message);
 
     if (!strcmp(property->name, CONNECTION_PROPERTY_NAME))
     {
-        propiedadConnect = property;
+        entrada->propiedadConnect = property;
     }
 
     if (!strcmp(property->name, CCD_EXPOSURE_PROPERTY_NAME))
     {
-        propiedadExposicion = property;
+        entrada->propiedadExposicion = property;
     }
 
     if (!strcmp(property->name, CCD_IMAGE_PROPERTY_NAME))
@@ -49,7 +54,7 @@ static indigo_result my_define_property(indigo_client *client,
     {
         static const char *items[] = {CCD_IMAGE_FORMAT_JPEG_ITEM_NAME};
         static bool values[] = {true};
-        indigo_change_switch_property(client, CCD_SIMULATOR, CCD_IMAGE_FORMAT_PROPERTY_NAME, 1, items, values);
+        indigo_change_switch_property(client, entrada->nombre, CCD_IMAGE_FORMAT_PROPERTY_NAME, 1, items, values);
     }
 
     return INDIGO_OK;
@@ -59,45 +64,35 @@ static indigo_result my_update_property(indigo_client *client,
                                         indigo_device *device, indigo_property *property, const char *message)
 {
 
-    if (strcmp(property->device, CCD_SIMULATOR) && strcmp(property->device, CCD_SIMULATOR2))
+    if (!es_interesante(property->device))
     {
         return INDIGO_OK;
+    }
+
+    struct Dispositivo *entrada = search(property->device);
+
+    if (entrada == NULL)
+    {
+        insert(property->device);
+        entrada = search(property->device);
     }
 
     print_property_list(property, message);
 
     if (!strcmp(property->name, CONNECTION_PROPERTY_NAME))
     {
-        propiedadConnect = property;
+        entrada->propiedadConnect = property;
     }
 
     if (!strcmp(property->name, CCD_EXPOSURE_PROPERTY_NAME))
     {
-        propiedadExposicion = property;
+        entrada->propiedadExposicion = property;
     }
 
     if (!strcmp(property->name, CCD_IMAGE_PROPERTY_NAME))
     {
-        /* URL blob transfer is available only in client - server setup.
-           This will never be called in case of a client loading a driver. */
-        if (*property->items[0].blob.url && indigo_populate_http_blob_item(&property->items[0]))
-            indigo_log("image URL received (%s, %d bytes)...", property->items[0].blob.url, property->items[0].blob.size);
-
-        if (property->items[0].blob.value)
-        {
-            char name[32];
-            sprintf(name, "img_%02d.jpeg", count);
-            FILE *f = fopen(name, "wb");
-            fwrite(property->items[0].blob.value, property->items[0].blob.size, 1, f);
-            fclose(f);
-            indigo_log("image saved to %s...", name);
-            /* In case we have URL BLOB transfer we need to release the blob ourselves */
-            if (*property->items[0].blob.url)
-            {
-                free(property->items[0].blob.value);
-                property->items[0].blob.value = NULL;
-            }
-        }
+        entrada->imagen = property;
+        almacena_foto(entrada);
     }
 
     return INDIGO_OK;
@@ -155,7 +150,15 @@ int main(int argc, const char *argv[])
 
     printf("Esperando a propiedad connect\n");
 
-    while (propiedadConnect == NULL)
+    struct Dispositivo *entrada = search(CCD_SIMULATOR);
+
+    while(entrada == NULL)
+    {
+        indigo_usleep(ONE_SECOND_DELAY);
+        entrada = search(CCD_SIMULATOR);
+    }
+
+    while (entrada->propiedadConnect == NULL)
     {
         indigo_usleep(ONE_SECOND_DELAY);
     }
@@ -163,7 +166,7 @@ int main(int argc, const char *argv[])
     printf("Ya he conseguido la propiedad connect\n");
     indigo_usleep(ONE_SECOND_DELAY);
 
-    if (indigo_get_switch(propiedadConnect, CONNECTION_CONNECTED_ITEM_NAME))
+    if (indigo_get_switch(entrada->propiedadConnect, CONNECTION_CONNECTED_ITEM_NAME))
     {
         printf("Ya estaba conectado\n");
     }
@@ -171,25 +174,25 @@ int main(int argc, const char *argv[])
     {
         printf("No estaba conectado\n");
 
-        indigo_device_connect(&my_client, CCD_SIMULATOR);
+        indigo_device_connect(&my_client, entrada->nombre);
 
         printf("Me conecto yo\n");
     }
 
     printf("Esperando a propiedad tiempo de exposicion\n");
-    while (propiedadExposicion == NULL)
+    while (entrada->propiedadExposicion == NULL)
     {
         indigo_usleep(ONE_SECOND_DELAY);
+        entrada = search(CCD_SIMULATOR);
     }
 
     printf("Ya la he conseguido, voy a hacer una foto\n");
 
     static const char *items[] = {CCD_EXPOSURE_ITEM_NAME};
-    static double values[] = {6.0};
-    indigo_change_number_property(&my_client, CCD_SIMULATOR2, CCD_EXPOSURE_PROPERTY_NAME, 1, items, values);
+    static double values[] = {2.0};
+    indigo_change_number_property(&my_client, entrada->nombre, CCD_EXPOSURE_PROPERTY_NAME, 1, items, values);
 
-    indigo_usleep(10 * ONE_SECOND_DELAY);
-
+    indigo_usleep(5 * ONE_SECOND_DELAY);
     indigo_disconnect_server(server);
     indigo_detach_client(&my_client);
     indigo_stop();

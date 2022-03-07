@@ -10,20 +10,22 @@
 
 struct Dispositivo
 {
-    char * nombre = NULL;
-    indigo_property *propiedadConnect = NULL;
-    indigo_property *propiedadExposicion = NULL;
-    indigo_property *imagen = NULL;
-}
+    char * nombre;
+    indigo_property *propiedadConnect;
+    indigo_property *propiedadExposicion;
+    indigo_property *imagen;
+};
 
 //https://www.tutorialspoint.com/data_structures_algorithms/hash_table_program_in_c.htm
 
-struct Dispositivo* hashArray[SIZE];
+struct Dispositivo* stDisp[SIZE];
 
-int hashCode(char * nombre);
-struct Dispositivo *search(char *nombre);
+int hashCode(const char * nombre);
+struct Dispositivo *search(const char *nombre);
 void insert(char * nombre);
+void display();
 
+void almacena_foto(struct Dispositivo *disp);
 /*
 struct Lista_disp
 {
