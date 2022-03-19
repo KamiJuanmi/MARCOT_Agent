@@ -1,5 +1,7 @@
 #include "utilidades.h"
 
+int num_devices;
+
 void print_property_list(indigo_property *property, const char *message)
 {
     indigo_item *item;
@@ -127,43 +129,52 @@ void print_property_list(indigo_property *property, const char *message)
         printf("\n");
 }
 
-void conecta_n_disp(int n, indigo_server_entry **server)
+void connect_all_dev(indigo_server_entry **server)
 {
     int port_ini = 8000;
     char host[9] = "indigo_x";
-    for (int i = 0; i < n; i++)
+    for (int i = 0; i < num_devices; i++)
     {
         host[7] = i + '0';
         indigo_connect_server(host, host, port_ini + i, server);
     }
 }
 
-bool es_interesante(const char *device_name)
+bool monitored_device(const char *device_name)
 {
-    // Solamente por ahora nos va a interesar el dispositivo CCD Imager Simulator @ ...
-    if (device_name == NULL || device_name[0] == '\0' || strlen(device_name) < 20)
+    if (device_name == NULL || device_name[0] == '\0')
     {
         return false;
     }
-    if (device_name[0] != 'C')
-    {
-        return false;
-    }
-    if (device_name[4] != 'I')
-    {
-        return false;
-    }
-    if (device_name[11] != 'S')
-    {
-        return false;
-    }
-    if (device_name[12] != 'i')
-    {
-        return false;
-    }
-    if (device_name[21] != '@')
-    {
-        return false;
-    }
+    
     return true;
+}
+
+void read_json(void)
+{
+    FILE *fp;
+    char buffer[1024];
+    struct json_object *parsed_json;
+    struct json_object *number_devices;
+
+    fp = fopen("conf.json","r");
+    if (fp == NULL)
+    {   
+        printf("Error al abrir el archivo json.");
+        return;
+    }
+    if(fread(buffer, 1024, 1, fp))
+    {   
+        printf("Error al leer el archivo json.");
+        return;
+    }
+    fclose(fp);
+
+    parsed_json = json_tokener_parse(buffer);
+
+    json_object_object_get_ex(parsed_json, "number_devices", &number_devices);
+
+    num_devices = json_object_get_int(number_devices);
+
+
 }

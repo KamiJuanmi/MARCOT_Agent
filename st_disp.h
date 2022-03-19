@@ -26,15 +26,12 @@ void insert(char * nombre);
 void display();
 
 void almacena_foto(struct Dispositivo *disp);
-/*
-struct Lista_disp
+
+struct Lista_prop
 {
-    struct Dispositivo *dsp;
-    struct Lista_disp *prev, *next;
-}
+    indigo_property *prop;
+    struct Lista_prop *prev, *next;
+};
 
 //Funciones
-void ld_add(struct Lista_disp*, struct Dispositivo); // Anade un nuevo dispositivo al final de la lista
-struct Dispositivo* nuevo_disp(int); // Crea un nuevo dispositivo
-struct Dispositivo* get_disp(int); // Devuelve el dispositivo en la posicion pasada
-*/
+void almacena_propiedad();

@@ -17,7 +17,7 @@ static indigo_result my_define_property(indigo_client *client,
                                         indigo_device *device, indigo_property *property, const char *message)
 {
 
-    if (!es_interesante(property->device))
+    if (!monitored_device(property->device))
     {
         return INDIGO_OK;
     }
@@ -64,7 +64,7 @@ static indigo_result my_update_property(indigo_client *client,
                                         indigo_device *device, indigo_property *property, const char *message)
 {
 
-    if (!es_interesante(property->device))
+    if (!monitored_device(property->device))
     {
         return INDIGO_OK;
     }
@@ -121,22 +121,7 @@ static indigo_client my_client = {
 
 int main(int argc, const char *argv[])
 {
-    int n_server;
-    if (argc < 2)
-    {
-        printf("Por favor vuelva a ejecutar \"./cliente <n_server>\"\n");
-        return 0;
-    }
-    else
-    {
-        const char *aux = argv[1];
-        if (aux[1] != '\0')
-        {
-            printf("Por favor vuelva a ejecutar \"./cliente <n_server>\", teniedo en cuenta que 0<n_server<10\n");
-            return 0;
-        }
-        n_server = (int)aux[0] - 48;
-    }
+    read_json();
 
     indigo_start();
 
@@ -146,7 +131,7 @@ int main(int argc, const char *argv[])
     indigo_attach_client(&my_client);
 
     indigo_server_entry *server;
-    conecta_n_disp(n_server, &server);
+    connect_all_dev(&server);
 
     printf("Esperando a propiedad connect\n");
 
@@ -193,9 +178,11 @@ int main(int argc, const char *argv[])
     indigo_change_number_property(&my_client, entrada->nombre, CCD_EXPOSURE_PROPERTY_NAME, 1, items, values);
 
     indigo_usleep(5 * ONE_SECOND_DELAY);
+    display();
     indigo_disconnect_server(server);
     indigo_detach_client(&my_client);
     indigo_stop();
 
     return 0;
+
 }
