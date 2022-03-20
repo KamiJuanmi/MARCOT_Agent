@@ -120,14 +120,6 @@ static indigo_client my_client = {
 
 int main(int argc, const char *argv[])
 {
-    Array a;
-    
-    initArray(&a, 5);
-    insertNombre(&a, "Hola");
-
-    printf("%s", a.array[0].nombre);
-    freeArray(&a);
-    /*
     read_json();
 
     indigo_start();
@@ -188,7 +180,6 @@ int main(int argc, const char *argv[])
     indigo_disconnect_server(server);
     indigo_detach_client(&my_client);
     indigo_stop();
-    */
     return 0;
 
 }
