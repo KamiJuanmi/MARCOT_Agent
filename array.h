@@ -4,8 +4,9 @@
 
 typedef union
 {
-    char *nombre; // tipo 0 
-    indigo_property *propiedad; // tipo 1
+    char *nombre;
+    int tipo_disp; // Usado para indicar el tipo de dispositivo con el que estamos trabajando
+    indigo_property *propiedad;
 } Contenido;
 
 typedef struct
@@ -23,5 +24,7 @@ void insertArray(Array *a, Contenido element);
 void insertNombre(Array *a, char* nombre);
 
 void insertPropiedad(Array *a, indigo_property *property);
+
+bool estaAlmacenadoNombre(Array a, char* nombre);
 
 void freeArray(Array *a);

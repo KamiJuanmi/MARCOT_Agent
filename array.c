@@ -31,6 +31,15 @@ void insertPropiedad(Array *a, indigo_property* property)
     insertArray(a, nuevo);
 }
 
+bool estaAlmacenadoNombre(Array a, char* nombre){
+    for(int i=0; i<a.used; i++)
+    {
+        if(!strcmp(nombre, a.array[i].nombre))
+            return true;
+    }
+    return false;
+}
+
 void freeArray(Array *a)
 {
     free(a->array);

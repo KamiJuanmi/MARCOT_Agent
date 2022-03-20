@@ -16,10 +16,12 @@ static bool reducir_print = true;
 
 extern struct json_object *parsed_json;
 
+extern Array nombre_tipo_disp; // nombre ... nombre tipo nombre ... nombre tipo
+
 void print_property_list(indigo_property *property, const char *message);
 
 void connect_all_dev(indigo_server_entry**);
 
 bool monitored_device(const char *device_name);
 
-void read_json();
+int read_json();

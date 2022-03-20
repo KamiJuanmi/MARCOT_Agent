@@ -1,12 +1,23 @@
 {
     "number_devices": 5,
-    "camera":{
-        "name": "CCD Imager Simulator @",
-        "type": 0,
-        "properties": [
-            "CONNECTION_PROPERTY_NAME",
-            "CCD_EXPOSURE_PROPERTY_NAME",
-            "CCD_IMAGE_PROPERTY_NAME"
-        ]
-    }
+    "devices": [
+        {
+            "names": [
+                "CCD Imager Simulator @", "Si"
+            ],
+            "properties": [
+                "CONNECTION_PROPERTY_NAME",
+                "CCD_EXPOSURE_PROPERTY_NAME",
+                "CCD_IMAGE_PROPERTY_NAME"
+            ]
+        },
+        {
+            "names": [
+                "Soy una montura"
+            ],
+            "properties": [
+                "Montura montura"
+            ]
+        }
+    ]
 }

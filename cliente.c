@@ -120,7 +120,10 @@ static indigo_client my_client = {
 
 int main(int argc, const char *argv[])
 {
-    read_json();
+    if(read_json())
+        return 1;
+    /*
+    
 
     indigo_start();
 
@@ -180,6 +183,7 @@ int main(int argc, const char *argv[])
     indigo_disconnect_server(server);
     indigo_detach_client(&my_client);
     indigo_stop();
+    */
     return 0;
 
 }
