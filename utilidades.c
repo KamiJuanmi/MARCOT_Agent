@@ -1,6 +1,6 @@
 #include "utilidades.h"
 
-int num_devices;
+struct json_object *parsed_json;
 
 void print_property_list(indigo_property *property, const char *message)
 {
@@ -133,6 +133,19 @@ void connect_all_dev(indigo_server_entry **server)
 {
     int port_ini = 8000;
     char host[9] = "indigo_x";
+
+    int num_devices = 0;
+    struct json_object *number_devices;
+
+    if (!json_object_object_get_ex(parsed_json, "number_devices", &number_devices))
+    {
+        printf("Error al extraer el numero de dispositivos del fichero JSON\n");
+    }
+    else
+    {
+        num_devices = json_object_get_int(number_devices);
+    }
+
     for (int i = 0; i < num_devices; i++)
     {
         host[7] = i + '0';
@@ -146,7 +159,27 @@ bool monitored_device(const char *device_name)
     {
         return false;
     }
-    
+    if (device_name[0] != 'C')
+    {
+        return false;
+    }
+    if (device_name[4] != 'I')
+    {
+        return false;
+    }
+    if (device_name[11] != 'S')
+    {
+        return false;
+    }
+    if (device_name[12] != 'i')
+    {
+        return false;
+    }
+    if (device_name[21] != '@')
+    {
+        return false;
+    }
+
     return true;
 }
 
@@ -154,27 +187,19 @@ void read_json(void)
 {
     FILE *fp;
     char buffer[1024];
-    struct json_object *parsed_json;
-    struct json_object *number_devices;
 
-    fp = fopen("conf.json","r");
+    fp = fopen("conf.json", "r");
     if (fp == NULL)
-    {   
+    {
         printf("Error al abrir el archivo json.");
         return;
     }
-    if(fread(buffer, 1024, 1, fp))
-    {   
+    if (fread(buffer, 1024, 1, fp))
+    {
         printf("Error al leer el archivo json.");
         return;
     }
     fclose(fp);
 
     parsed_json = json_tokener_parse(buffer);
-
-    json_object_object_get_ex(parsed_json, "number_devices", &number_devices);
-
-    num_devices = json_object_get_int(number_devices);
-
-
 }

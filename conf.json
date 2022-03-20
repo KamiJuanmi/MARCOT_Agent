@@ -1,7 +1,8 @@
 {
     "number_devices": 5,
-    "cameras":{
+    "camera":{
         "name": "CCD Imager Simulator @",
+        "type": 0,
         "properties": [
             "CONNECTION_PROPERTY_NAME",
             "CCD_EXPOSURE_PROPERTY_NAME",

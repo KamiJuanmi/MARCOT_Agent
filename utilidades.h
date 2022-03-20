@@ -1,11 +1,7 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <errno.h>
-#include <string.h>
-
 #include <indigo/indigo_bus.h>
 #include <indigo/indigo_client.h>
-#include <indigo/indigo_xml.h>
+
+#include "array.h"
 
 // https://github.com/jehiah/json-c
 // https://askubuntu.com/questions/1295203/where-to-install-json-c
@@ -18,7 +14,7 @@ static bool print_verbose = false;
 
 static bool reducir_print = true;
 
-extern int num_devices;
+extern struct json_object *parsed_json;
 
 void print_property_list(indigo_property *property, const char *message);
 

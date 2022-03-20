@@ -1,4 +1,3 @@
-#include "utilidades.h"
 #include "st_disp.h"
 
 #define CCD_SIMULATOR "CCD Imager Simulator @ indigo_4"
@@ -22,7 +21,7 @@ static indigo_result my_define_property(indigo_client *client,
         return INDIGO_OK;
     }
 
-    struct Dispositivo *entrada = search(property->device);
+    Dispositivo *entrada = search(property->device);
 
     if (entrada == NULL)
     {
@@ -69,7 +68,7 @@ static indigo_result my_update_property(indigo_client *client,
         return INDIGO_OK;
     }
 
-    struct Dispositivo *entrada = search(property->device);
+    Dispositivo *entrada = search(property->device);
 
     if (entrada == NULL)
     {
@@ -121,6 +120,14 @@ static indigo_client my_client = {
 
 int main(int argc, const char *argv[])
 {
+    Array a;
+    
+    initArray(&a, 5);
+    insertNombre(&a, "Hola");
+
+    printf("%s", a.array[0].nombre);
+    freeArray(&a);
+    /*
     read_json();
 
     indigo_start();
@@ -135,7 +142,7 @@ int main(int argc, const char *argv[])
 
     printf("Esperando a propiedad connect\n");
 
-    struct Dispositivo *entrada = search(CCD_SIMULATOR);
+    Dispositivo *entrada = search(CCD_SIMULATOR);
 
     while(entrada == NULL)
     {
@@ -178,11 +185,10 @@ int main(int argc, const char *argv[])
     indigo_change_number_property(&my_client, entrada->nombre, CCD_EXPOSURE_PROPERTY_NAME, 1, items, values);
 
     indigo_usleep(5 * ONE_SECOND_DELAY);
-    display();
     indigo_disconnect_server(server);
     indigo_detach_client(&my_client);
     indigo_stop();
-
+    */
     return 0;
 
 }

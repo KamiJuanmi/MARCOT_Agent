@@ -20,7 +20,7 @@ int hashCode(const char *nombre)
     return final;
 }
 
-struct Dispositivo *search(const char *nombre)
+Dispositivo *search(const char *nombre)
 {
     int hashIndex = hashCode(nombre);
 
@@ -31,7 +31,7 @@ struct Dispositivo *search(const char *nombre)
     // printf("Este es el que se ha pasado: %s\n", nombre);
 
     if (!strcmp(stDisp[hashIndex]->nombre, nombre))
-    { // printf("Hola?\n");
+    {
         return stDisp[hashIndex];
     }
 
@@ -59,7 +59,7 @@ struct Dispositivo *search(const char *nombre)
 void insert(char *nombre)
 {
 
-    struct Dispositivo *nuevo = (struct Dispositivo *)malloc(sizeof(struct Dispositivo));
+    Dispositivo *nuevo = (Dispositivo *)malloc(sizeof(Dispositivo));
     nuevo->nombre = nombre;
 
     int hashIndex = hashCode(nombre);
@@ -78,6 +78,7 @@ void insert(char *nombre)
     stDisp[hashIndex] = nuevo;
 }
 
+// Da segmentation fault pero weno ->
 void display()
 {
     int i = 0;
@@ -94,7 +95,7 @@ void display()
     printf("\n");
 }
 
-void almacena_foto(struct Dispositivo *disp)
+void almacena_foto(Dispositivo *disp)
 {
     indigo_property *property = disp->imagen;
     /* URL blob transfer is available only in client - server setup.
@@ -121,14 +122,14 @@ void almacena_foto(struct Dispositivo *disp)
 }
 
 /*
-void ld_add(struct Lista_disp* ld, struct Dispositivo disp){
+void ld_add(struct Lista_disp* ld, Dispositivo disp){
 
 }
 
-struct Dispositivo* nuevo_disp(int n_disp){
+Dispositivo* nuevo_disp(int n_disp){
 
 }
 
-struct Dispositivo* get_disp(int n_disp){
+Dispositivo* get_disp(int n_disp){
 
 }*/
