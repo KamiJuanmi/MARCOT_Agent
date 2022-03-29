@@ -60,7 +60,10 @@ void insert(char *nombre)
 {
 
     Dispositivo *nuevo = (Dispositivo *)malloc(sizeof(Dispositivo));
+    initArray(&nuevo->propiedades, 2);
     nuevo->nombre = nombre;
+
+    printf("%s\n",nuevo->nombre);
 
     int hashIndex = hashCode(nombre);
 

@@ -18,6 +18,8 @@ extern struct json_object *parsed_json;
 
 extern Array nombre_tipo_disp; // nombre ... nombre tipo nombre ... nombre tipo
 
+extern int num_devices;
+
 void print_property_list(indigo_property *property, const char *message);
 
 void connect_all_dev(indigo_server_entry**);

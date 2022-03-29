@@ -12,6 +12,7 @@ typedef struct
     ...
     */
     int type;
+    Array propiedades;
     indigo_property *propiedadConnect;
     indigo_property *propiedadExposicion;
     indigo_property *imagen;

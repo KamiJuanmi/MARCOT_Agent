@@ -17,25 +17,35 @@ void insertArray(Array *a, Contenido element)
     a->array[a->used++] = element;
 }
 
-void insertNombre(Array *a, char* nombre)
+void insertNombre(Array *a, char *nombre)
 {
     Contenido nuevo;
     nuevo.nombre = nombre;
     insertArray(a, nuevo);
 }
 
-void insertPropiedad(Array *a, indigo_property* property)
+void insertPropiedad(Array *a, indigo_property *property)
 {
     Contenido nuevo;
     nuevo.propiedad = property;
     insertArray(a, nuevo);
 }
 
-bool estaAlmacenadoNombre(Array a, char* nombre){
-    for(int i=0; i<a.used; i++)
+bool estaAlmacenadoNombre(Array a, char *nombre)
+{
+    for (int i = 0; i < a.used; i++)
     {
-        if(!strcmp(nombre, a.array[i].nombre))
-            return true;
+        for (int j = 0; j < strlen(nombre) && j < strlen(a.array[i].nombre); j++)
+        {
+            if (!(nombre[j] == a.array[i].nombre[j]))
+            {
+                break;
+            }
+            if(nombre[j] == '@')
+            {
+                return true;
+            }
+        }
     }
     return false;
 }

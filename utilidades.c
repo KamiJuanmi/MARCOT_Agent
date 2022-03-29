@@ -1,7 +1,8 @@
 #include "utilidades.h"
 
 struct json_object *parsed_json;
-Array nombre_tipo_disp;
+Array nombre_dispositivos;
+int num_devices;
 
 void print_property_list(indigo_property *property, const char *message)
 {
@@ -135,18 +136,6 @@ void connect_all_dev(indigo_server_entry **server)
     int port_ini = 8000;
     char host[9] = "indigo_x";
 
-    int num_devices = 0;
-    struct json_object *number_devices;
-
-    if (!json_object_object_get_ex(parsed_json, "number_devices", &number_devices))
-    {
-        printf("Error al extraer el numero de dispositivos del fichero JSON\n");
-    }
-    else
-    {
-        num_devices = json_object_get_int(number_devices);
-    }
-
     for (int i = 0; i < num_devices; i++)
     {
         host[7] = i + '0';
@@ -156,32 +145,11 @@ void connect_all_dev(indigo_server_entry **server)
 
 bool monitored_device(const char *device_name)
 {
-    if (device_name == NULL || device_name[0] == '\0')
+    if (estaAlmacenadoNombre(nombre_dispositivos, device_name))
     {
-        return false;
+        return true;
     }
-    if (device_name[0] != 'C')
-    {
-        return false;
-    }
-    if (device_name[4] != 'I')
-    {
-        return false;
-    }
-    if (device_name[11] != 'S')
-    {
-        return false;
-    }
-    if (device_name[12] != 'i')
-    {
-        return false;
-    }
-    if (device_name[21] != '@')
-    {
-        return false;
-    }
-
-    return true;
+    return false;
 }
 
 int read_json(void)
@@ -204,6 +172,17 @@ int read_json(void)
 
     parsed_json = json_tokener_parse(buffer);
 
+    struct json_object *number_devices;
+
+    if (!json_object_object_get_ex(parsed_json, "number_devices", &number_devices))
+    {
+        printf("Error al extraer el numero de dispositivos del fichero JSON\n");
+    }
+    else
+    {
+        num_devices = json_object_get_int(number_devices);
+    }
+
     struct json_object *devices;
     struct array_list *dispositivos;
     // https://json-c.github.io/json-c/json-c-0.10/doc/html/arraylist_8h.html
@@ -216,25 +195,31 @@ int read_json(void)
     }
 
     dispositivos = json_object_get_array(devices);
+    int n_distintos_dispositivos = array_list_length(dispositivos);
 
-    disp = array_list_get_idx(dispositivos, 0);
+    initArray(&nombre_dispositivos, 2);
 
-    struct json_object *nombres_etiq;
-
-    if (!json_object_object_get_ex(disp, "names", &nombres_etiq))
+    for (int i = 0; i < n_distintos_dispositivos; i++)
     {
-        printf("Error al extraer los nombres de los dispositivos del fichero JSON\n");
-        return 1;
-    }
+        disp = array_list_get_idx(dispositivos, i);
 
-    int n_nombres = json_object_array_length(nombres_etiq);
-    for (int i = 0; i < n_nombres; i++)
-    {
-        struct json_object *nombres_reales = json_object_array_get_idx(nombres_etiq, i);
-        const char * nombre = json_object_get_string(nombres_reales);
-        printf("%s\n", nombre);
-    }
+        struct json_object *nombres_etiq;
 
+        if (!json_object_object_get_ex(disp, "names", &nombres_etiq))
+        {
+            printf("Error al extraer los nombres de los dispositivos del fichero JSON\n");
+            return 1;
+        }
+
+        // https://stackoverflow.com/questions/65914522/using-the-json-c-library-to-parse-a-json-array
+        int n_nombres = json_object_array_length(nombres_etiq);
+        for (int j = 0; j < n_nombres; j++)
+        {
+            struct json_object *nombres_reales = json_object_array_get_idx(nombres_etiq, j);
+            char *nombre = json_object_get_string(nombres_reales);
+            insertNombre(&nombre_dispositivos, nombre);
+        }
+    }
 
     return 0;
 }

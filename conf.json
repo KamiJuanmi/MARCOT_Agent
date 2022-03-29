@@ -3,7 +3,7 @@
     "devices": [
         {
             "names": [
-                "CCD Imager Simulator @", "Si"
+                "CCD Imager Simulator @"
             ],
             "properties": [
                 "CONNECTION_PROPERTY_NAME",
@@ -13,7 +13,7 @@
         },
         {
             "names": [
-                "Soy una montura"
+                "Mount Simulator @"
             ],
             "properties": [
                 "Montura montura"

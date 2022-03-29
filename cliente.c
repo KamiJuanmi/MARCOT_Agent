@@ -1,6 +1,54 @@
 #include "st_disp.h"
 
-#define CCD_SIMULATOR "CCD Imager Simulator @ indigo_4"
+#define CCD_SIMULATOR "CCD Imager Simulator @ indigo_1"
+
+
+void prueba_camara(indigo_client * my_client)
+{
+    printf("Esperando a propiedad connect\n");
+
+    Dispositivo *entrada = search(CCD_SIMULATOR);
+
+    while(entrada == NULL)
+    {
+        indigo_usleep(ONE_SECOND_DELAY);
+        entrada = search(CCD_SIMULATOR);
+    }
+
+    while (entrada->propiedadConnect == NULL)
+    {
+        indigo_usleep(ONE_SECOND_DELAY);
+    }
+
+    printf("Ya he conseguido la propiedad connect\n");
+    indigo_usleep(ONE_SECOND_DELAY);
+
+    if (indigo_get_switch(entrada->propiedadConnect, CONNECTION_CONNECTED_ITEM_NAME))
+    {
+        printf("Ya estaba conectado\n");
+    }
+    else
+    {
+        printf("No estaba conectado\n");
+
+        indigo_device_connect(my_client, entrada->nombre);
+
+        printf("Me conecto yo\n");
+    }
+
+    printf("Esperando a propiedad tiempo de exposicion\n");
+    while (entrada->propiedadExposicion == NULL)
+    {
+        indigo_usleep(ONE_SECOND_DELAY);
+        entrada = search(CCD_SIMULATOR);
+    }
+
+    printf("Ya la he conseguido, voy a hacer una foto\n");
+
+    static const char *items[] = {CCD_EXPOSURE_ITEM_NAME};
+    static double values[] = {2.0};
+    indigo_change_number_property(my_client, entrada->nombre, CCD_EXPOSURE_PROPERTY_NAME, 1, items, values);
+}
 
 static indigo_result my_attach(indigo_client *client)
 {
@@ -122,7 +170,7 @@ int main(int argc, const char *argv[])
 {
     if(read_json())
         return 1;
-    /*
+    
     
 
     indigo_start();
@@ -134,56 +182,15 @@ int main(int argc, const char *argv[])
 
     indigo_server_entry *server;
     connect_all_dev(&server);
+    
 
-    printf("Esperando a propiedad connect\n");
-
-    Dispositivo *entrada = search(CCD_SIMULATOR);
-
-    while(entrada == NULL)
-    {
-        indigo_usleep(ONE_SECOND_DELAY);
-        entrada = search(CCD_SIMULATOR);
-    }
-
-    while (entrada->propiedadConnect == NULL)
-    {
-        indigo_usleep(ONE_SECOND_DELAY);
-    }
-
-    printf("Ya he conseguido la propiedad connect\n");
-    indigo_usleep(ONE_SECOND_DELAY);
-
-    if (indigo_get_switch(entrada->propiedadConnect, CONNECTION_CONNECTED_ITEM_NAME))
-    {
-        printf("Ya estaba conectado\n");
-    }
-    else
-    {
-        printf("No estaba conectado\n");
-
-        indigo_device_connect(&my_client, entrada->nombre);
-
-        printf("Me conecto yo\n");
-    }
-
-    printf("Esperando a propiedad tiempo de exposicion\n");
-    while (entrada->propiedadExposicion == NULL)
-    {
-        indigo_usleep(ONE_SECOND_DELAY);
-        entrada = search(CCD_SIMULATOR);
-    }
-
-    printf("Ya la he conseguido, voy a hacer una foto\n");
-
-    static const char *items[] = {CCD_EXPOSURE_ITEM_NAME};
-    static double values[] = {2.0};
-    indigo_change_number_property(&my_client, entrada->nombre, CCD_EXPOSURE_PROPERTY_NAME, 1, items, values);
+    prueba_camara(&my_client);
 
     indigo_usleep(5 * ONE_SECOND_DELAY);
     indigo_disconnect_server(server);
     indigo_detach_client(&my_client);
+    display();
     indigo_stop();
-    */
     return 0;
 
 }
