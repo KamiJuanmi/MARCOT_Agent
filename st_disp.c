@@ -2,22 +2,31 @@
 
 int hashCode(const char *nombre)
 {
-    if (nombre == NULL)
+    // https://stackoverflow.com/questions/25894642/how-to-obtain-the-same-result-of-java-string-hashcode-in-objective-c
+    int hash = 0;
+    for (int i = 0; i<strlen(nombre); i++)
     {
-        return 0;
+        hash = (31*hash) + nombre[i];
     }
-    if (nombre[0] == '\0')
+    hash %= SIZE;
+    if(hash <0)
+        hash += SIZE;
+    printf("%d\n", hash);
+    return hash;
+}
+
+int doubleHash(const char *nombre)
+{
+    int hash = 0;
+    for (int i = 0; i<strlen(nombre); i++)
     {
-        return 0;
+        hash = (61*hash) + nombre[i];
     }
-
-    char final;
-
-    final = nombre[strlen(nombre) - 1];
-
-    final = (int) final - 48;
-
-    return final;
+    hash %= SIZE;
+    if(hash <0)
+        hash += SIZE;
+    printf("%d\n", hash);
+    return hash;
 }
 
 Dispositivo *search(const char *nombre)
@@ -35,10 +44,8 @@ Dispositivo *search(const char *nombre)
         return stDisp[hashIndex];
     }
 
-    return NULL;
-
-    /*SI HUBIERA COLISIONES
-    // move in array until an empty
+    // SI HUBIERA COLISIONES
+    int s_hash = doubleHash(nombre);
     while (stDisp[hashIndex] != NULL)
     {
 
@@ -46,14 +53,14 @@ Dispositivo *search(const char *nombre)
             return stDisp[hashIndex];
 
         // go to next cell
-        ++hashIndex;
+        hashIndex+=s_hash;
 
         // wrap around the table
         hashIndex %= SIZE;
     }
 
     return NULL;
-    */
+    
 }
 
 void insert(char *nombre)
@@ -67,16 +74,17 @@ void insert(char *nombre)
 
     int hashIndex = hashCode(nombre);
 
-    /*Si hubiera colisiones
-    // move in array until an empty or deleted cell
-    while (stDisp[hashIndex] != NULL && stDisp[hashIndex]->key != -1)
+    // Si hubiera colisiones
+    int s_hash = doubleHash(nombre);
+    // move in array until an empty or deleted cell, no va a haber porque nunca se borra
+    while (stDisp[hashIndex] != NULL)
     {
         // go to next cell
-        ++hashIndex;
+        hashIndex+=s_hash;
 
         // wrap around the table
         hashIndex %= SIZE;
-    }*/
+    }
 
     stDisp[hashIndex] = nuevo;
 }
@@ -123,16 +131,3 @@ void almacena_foto(Dispositivo *disp)
         }
     }
 }
-
-/*
-void ld_add(struct Lista_disp* ld, Dispositivo disp){
-
-}
-
-Dispositivo* nuevo_disp(int n_disp){
-
-}
-
-Dispositivo* get_disp(int n_disp){
-
-}*/

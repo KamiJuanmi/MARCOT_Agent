@@ -1,6 +1,6 @@
 #include "utilidades.h"
 
-#define SIZE 10
+#define SIZE 13
 
 typedef struct 
 {
