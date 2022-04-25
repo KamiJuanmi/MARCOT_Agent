@@ -219,7 +219,10 @@ int read_json(void)
             char *nombre = json_object_get_string(nombres_reales);
             insertNombre(&nombre_dispositivos, nombre);
         }
+        insertInt(&nombre_dispositivos, i);
     }
+
+    printArray(nombre_dispositivos);
 
     return 0;
 }
