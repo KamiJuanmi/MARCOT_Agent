@@ -1,5 +1,32 @@
 #include "array.h"
 
+int hashCode(const char *nombre, const int size)
+{
+    // https://stackoverflow.com/questions/25894642/how-to-obtain-the-same-result-of-java-string-hashcode-in-objective-c
+    int hash = 0;
+    for (int i = 0; i<strlen(nombre); i++)
+    {
+        hash = (31*hash) + nombre[i];
+    }
+    hash %= size;
+    if(hash <0)
+        hash += size;
+    return hash;
+}
+
+int doubleHash(const char *nombre, const int size)
+{
+    int hash = 0;
+    for (int i = 0; i<strlen(nombre); i++)
+    {
+        hash = (61*hash) + nombre[i];
+    }
+    hash %= size;
+    if(hash <0)
+        hash += size;
+    return hash;
+}
+
 void initArray(Array *a, size_t initialSize)
 {
     a->array = malloc(initialSize * sizeof(Contenido));
@@ -31,7 +58,7 @@ void insertInt(Array *a, int elemento)
 {
     Contenido nuevo;
     Un_Contenido aux_nuevo;
-    aux_nuevo.tipo_disp = elemento;
+    aux_nuevo.num_array = elemento;
     nuevo.cont = aux_nuevo;
     nuevo.uniontype = 1;
     insertArray(a, nuevo);
@@ -85,7 +112,7 @@ void printArray(Array a)
             printf("%s", a.array[i].cont.nombre);
             break;
         case 1:
-            printf("%d", a.array[i].cont.tipo_disp);
+            printf("%d", a.array[i].cont.num_array);
             break;
         }
         printf("\t");

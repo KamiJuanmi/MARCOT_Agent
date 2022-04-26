@@ -22,7 +22,7 @@ typedef struct
 
 Dispositivo* stDisp[SIZE];
 
-int hashCode(const char * nombre);
+
 Dispositivo *search(const char *nombre);
 void insert(char * nombre);
 void display();

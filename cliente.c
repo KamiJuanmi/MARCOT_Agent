@@ -171,26 +171,40 @@ int main(int argc, const char *argv[])
     if(read_json())
         return 1;
     
+    HashTable prueba;
+
+    initHashTable(&prueba, 3);
+    char* nombre = "Juanluis";
+    hashNombre(&prueba, nombre, "Juanluis");
+    printHashTable(prueba);
+    hashNombre(&prueba, "PEPELU", "Hola");
+    printHashTable(prueba);
+    hashInt(&prueba, "hostia", 8);
+    printHashTable(prueba);
+    hashInt(&prueba, "siuuuu", 10);
+    printHashTable(prueba);
+    char* hola = searchNombreHash(&prueba, "polla");
+    printf(hola);
+    freeHashTable(&prueba);
+
+    // indigo_start();
+
+    // // Para ver los mensajes de DEBUG en pantalla
+    // indigo_set_log_level(INDIGO_LOG_DEBUG);
+
+    // indigo_attach_client(&my_client);
+
+    // indigo_server_entry *server;
+    // connect_all_dev(&server);
     
 
-    indigo_start();
+    // prueba_camara(&my_client);
 
-    // Para ver los mensajes de DEBUG en pantalla
-    indigo_set_log_level(INDIGO_LOG_DEBUG);
-
-    indigo_attach_client(&my_client);
-
-    indigo_server_entry *server;
-    connect_all_dev(&server);
-    
-
-    prueba_camara(&my_client);
-
-    indigo_usleep(5 * ONE_SECOND_DELAY);
-    indigo_disconnect_server(server);
-    indigo_detach_client(&my_client);
-    display();
-    indigo_stop();
+    // indigo_usleep(5 * ONE_SECOND_DELAY);
+    // indigo_disconnect_server(server);
+    // indigo_detach_client(&my_client);
+    // display();
+    // indigo_stop();
     return 0;
 
 }

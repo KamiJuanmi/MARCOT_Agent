@@ -5,7 +5,7 @@
 typedef union
 {
     char *nombre;
-    int tipo_disp; // Usado para indicar el tipo de dispositivo con el que estamos trabajando
+    int num_array; // Usado para indicar el tipo de dispositivo con el que estamos trabajando
     indigo_property *propiedad;
 } Un_Contenido;
 
@@ -22,6 +22,9 @@ typedef struct
     size_t size;
 } Array;
 
+int hashCode(const char* key, const int size);
+
+int doubleHash(const char* key, const int size);
 
 void initArray(Array *a, size_t initialSize);
 

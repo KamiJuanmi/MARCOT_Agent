@@ -1,7 +1,7 @@
 #include <indigo/indigo_bus.h>
 #include <indigo/indigo_client.h>
 
-#include "array.h"
+#include "hashtable.h"
 
 // https://github.com/jehiah/json-c
 // https://askubuntu.com/questions/1295203/where-to-install-json-c
@@ -16,7 +16,7 @@ static bool reducir_print = true;
 
 extern struct json_object *parsed_json;
 
-extern Array nombre_tipo_disp; // nombre ... nombre tipo nombre ... nombre tipo
+extern Array nombre_num_array; // nombre ... nombre tipo nombre ... nombre tipo
 
 extern int num_devices;
 

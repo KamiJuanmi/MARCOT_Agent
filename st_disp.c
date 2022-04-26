@@ -1,51 +1,15 @@
 #include "st_disp.h"
 
-int hashCode(const char *nombre)
-{
-    // https://stackoverflow.com/questions/25894642/how-to-obtain-the-same-result-of-java-string-hashcode-in-objective-c
-    int hash = 0;
-    for (int i = 0; i<strlen(nombre); i++)
-    {
-        hash = (31*hash) + nombre[i];
-    }
-    hash %= SIZE;
-    if(hash <0)
-        hash += SIZE;
-    printf("%d\n", hash);
-    return hash;
-}
-
-int doubleHash(const char *nombre)
-{
-    int hash = 0;
-    for (int i = 0; i<strlen(nombre); i++)
-    {
-        hash = (61*hash) + nombre[i];
-    }
-    hash %= SIZE;
-    if(hash <0)
-        hash += SIZE;
-    printf("%d\n", hash);
-    return hash;
-}
 
 Dispositivo *search(const char *nombre)
 {
-    int hashIndex = hashCode(nombre);
+    int hashIndex = hashCode(nombre, SIZE);
 
     if (stDisp[hashIndex] == NULL)
         return NULL;
 
-    // printf("Este es el almacenado: %s\n", stDisp[hashIndex]->nombre);
-    // printf("Este es el que se ha pasado: %s\n", nombre);
-
-    if (!strcmp(stDisp[hashIndex]->nombre, nombre))
-    {
-        return stDisp[hashIndex];
-    }
-
     // SI HUBIERA COLISIONES
-    int s_hash = doubleHash(nombre);
+    int s_hash = doubleHash(nombre, SIZE);
     while (stDisp[hashIndex] != NULL)
     {
 
@@ -70,12 +34,12 @@ void insert(char *nombre)
     initArray(&nuevo->propiedades, 2);
     nuevo->nombre = nombre;
 
-    printf("%s\n",nuevo->nombre);
+    // printf("%s\n",nuevo->nombre);
 
-    int hashIndex = hashCode(nombre);
+    int hashIndex = hashCode(nombre, SIZE);
 
     // Si hubiera colisiones
-    int s_hash = doubleHash(nombre);
+    int s_hash = doubleHash(nombre, SIZE);
     // move in array until an empty or deleted cell, no va a haber porque nunca se borra
     while (stDisp[hashIndex] != NULL)
     {
@@ -116,7 +80,7 @@ void almacena_foto(Dispositivo *disp)
 
     if (property->items[0].blob.value)
     {
-        int n_disp = hashCode(disp->nombre);
+        int n_disp = hashCode(disp->nombre, SIZE);
         char name[32];
         sprintf(name, "img_disp_%02d.jpeg", n_disp);
         FILE *f = fopen(name, "wb");
