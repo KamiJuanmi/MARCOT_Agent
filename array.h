@@ -36,7 +36,11 @@ void insertInt(Array *a, int elemento);
 
 void insertPropiedad(Array *a, indigo_property *property);
 
+void updatePropiedad(Array *a, indigo_property *property, int posicion_propiedad);
+
 bool estaAlmacenadoNombre(Array a, char* nombre);
+
+int getPosicionNombre(Array a, char *nombre);
 
 void freeArray(Array *a);
 

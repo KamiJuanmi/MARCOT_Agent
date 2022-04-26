@@ -2,6 +2,7 @@
 
 struct json_object *parsed_json;
 Array nombre_dispositivos;
+HashTable* propiedades_tipo;
 int num_devices;
 
 void print_property_list(indigo_property *property, const char *message)
@@ -152,6 +153,24 @@ bool monitored_device(const char *device_name)
     return false;
 }
 
+bool property_match(const char *property_name, const int type)
+{
+    HashTable propiedades = propiedades_tipo[type];
+
+    return checkeaKey(&propiedades, property_name);
+}
+
+int get_tipo_device(const char* device_name)
+{
+    int i = getPosicionNombre(nombre_dispositivos, device_name);
+    for(i; i<nombre_dispositivos.used; i++)
+    {
+        if(nombre_dispositivos.array[i].uniontype==1)
+            return nombre_dispositivos.array[i].cont.num_array;
+    }
+    return -1;
+}
+
 int read_json(void)
 {
     FILE *fp;
@@ -197,6 +216,8 @@ int read_json(void)
     dispositivos = json_object_get_array(devices);
     int n_distintos_dispositivos = array_list_length(dispositivos);
 
+    propiedades_tipo = malloc(n_distintos_dispositivos * sizeof(HashTable));
+
     initArray(&nombre_dispositivos, 2);
 
     for (int i = 0; i < n_distintos_dispositivos; i++)
@@ -220,9 +241,27 @@ int read_json(void)
             insertNombre(&nombre_dispositivos, nombre);
         }
         insertInt(&nombre_dispositivos, i);
-    }
 
-    printArray(nombre_dispositivos);
+        struct json_object *prop_etiq;
+
+        if (!json_object_object_get_ex(disp, "properties", &prop_etiq))
+        {
+            printf("Error al extraer las propiedades de los dispositivos del fichero JSON\n");
+            return 1;
+        }
+
+        int n_prop = json_object_array_length(prop_etiq);
+        HashTable prop_disp;
+        initHashTable(&prop_disp, n_prop);
+        for (int j = 0; j < n_prop; j++)
+        {
+            struct json_object *prop_reales = json_object_array_get_idx(prop_etiq, j);
+            char *nombre = json_object_get_string(prop_reales);
+            hashInt(&prop_disp, nombre, 0);
+        }
+
+        propiedades_tipo[i] = prop_disp;
+    }
 
     return 0;
 }

@@ -18,7 +18,6 @@ typedef struct
 typedef struct
 {
     hashableCont *ht;
-    Array memoria_keys;
     size_t used;
     size_t size;
 } HashTable;
@@ -35,7 +34,7 @@ void hashNombre(HashTable *ht, char* key, char* nombre);
 
 void hashInt(HashTable *ht, char* key, int elemento);
 
-bool checkeaKey(HashTable ht, char* key);
+bool checkeaKey(HashTable *ht, char* key);
 
 hashableCont* searchHash(HashTable *ht, char* key);
 
@@ -46,5 +45,3 @@ int searchIntHash(HashTable *ht, char* key);
 void freeHashTable(HashTable *ht);
 
 void printHashTable(HashTable ht);
-
-void printMemoria(HashTable ht);

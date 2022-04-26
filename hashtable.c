@@ -3,6 +3,14 @@
 void initHashTable(HashTable *ht, size_t initialSize)
 {
     ht->ht = malloc(initialSize * sizeof(hashableCont));
+    hashableCont nuevo;
+    nuevo.cont.posicion = 0;
+    nuevo.uniontype = 0;
+    nuevo.key = NULL;
+    for(int i = 0; i<initialSize; i++)
+    {
+        ht->ht[i] = nuevo;
+    }
     ht->used = 0;
     ht->size = initialSize;
 }
@@ -76,7 +84,8 @@ int dimePosicion(HashTable *ht, char* key)
         return -1;
 
     // SI HUBIERA COLISIONES
-    while (ht->ht[hashIndex].uniontype > 0)
+    int n_veces = 0;
+    while (ht->ht[hashIndex].uniontype > 0 && n_veces<ht->size)
     {
         if (!strcmp(ht->ht[hashIndex].key, key))
             return hashIndex;
@@ -85,6 +94,7 @@ int dimePosicion(HashTable *ht, char* key)
 
         // wrap around the table
         hashIndex %= ht->size;
+        n_veces ++;
     }
 
     return -1;
@@ -143,6 +153,16 @@ void hashInt(HashTable *ht, char* key, int elemento)
     insertHashTable(ht, key, nuevo);
 }
 
+bool checkeaKey(HashTable *ht, char* key){
+    hashableCont *nuevo;
+    
+    nuevo = searchHash(ht, key);
+    if(nuevo == NULL)
+        return false;
+
+    return true;
+}
+
 void freeHashTable(HashTable *ht)
 {
     free(ht->ht);
@@ -153,44 +173,21 @@ void freeHashTable(HashTable *ht)
 void printHashTable(HashTable ht)
 {
     printf("\n");
+    printf("El tamano es de %i\n", ht.size);
     for(int i=0; i<ht.size; i++)
     {
         if(ht.ht[i].uniontype != 1 && ht.ht[i].uniontype != 2)
         {
-            printf(" ~~ ");
+            printf(" ~~ \n");
         }else{
+            printf(" %s ", ht.ht[i].key);
             switch (ht.ht[i].uniontype)
             {
             case 1: //Es un string
-                printf(" %s ", ht.ht[i].cont.nombre);
+                printf(" %s\n", ht.ht[i].cont.nombre);
                 break;
             case 2: //Es un numero
-                printf(" %i ", ht.ht[i].cont.posicion);
-                break;
-            default:
-                break;
-            }
-        }
-    }
-    printf("\n");
-}
-
-void printAUX(HashTable ht, hashableCont *cont_antiguo)
-{
-    printf("\n");
-    for(int i=0; i<ht.used; i++)
-    {
-        if(cont_antiguo[i].uniontype != 1 && cont_antiguo[i].uniontype != 2)
-        {
-            printf(" ~~ ");
-        }else{
-            switch (cont_antiguo[i].uniontype)
-            {
-            case 1: //Es un string
-                printf(" %s ", cont_antiguo[i].cont.nombre);
-                break;
-            case 2: //Es un numero
-                printf(" %i ", cont_antiguo[i].cont.posicion);
+                printf(" %i\n", ht.ht[i].cont.posicion);
                 break;
             default:
                 break;

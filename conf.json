@@ -6,9 +6,9 @@
                 "CCD Imager Simulator @"
             ],
             "properties": [
-                "CONNECTION_PROPERTY_NAME",
-                "CCD_EXPOSURE_PROPERTY_NAME",
-                "CCD_IMAGE_PROPERTY_NAME"
+                "CONNECTION",
+                "CCD_EXPOSURE",
+                "CCD_IMAGE"
             ]
         },
         {
@@ -16,8 +16,14 @@
                 "Mount Simulator @"
             ],
             "properties": [
-                "Montura montura"
+                "Montura montura",
+                "Hola hola",
+                "Chema la bagoneta",
+                "Juanluis"
             ]
         }
     ]
 }
+
+
+

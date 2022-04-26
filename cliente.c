@@ -1,12 +1,10 @@
 #include "st_disp.h"
 
-#define CCD_SIMULATOR "CCD Imager Simulator @ indigo_1"
+#define CCD_SIMULATOR "CCD Imager Simulator @ indigo_2"
 
 
 void prueba_camara(indigo_client * my_client)
 {
-    printf("Esperando a propiedad connect\n");
-
     Dispositivo *entrada = search(CCD_SIMULATOR);
 
     while(entrada == NULL)
@@ -14,16 +12,20 @@ void prueba_camara(indigo_client * my_client)
         indigo_usleep(ONE_SECOND_DELAY);
         entrada = search(CCD_SIMULATOR);
     }
+    
+    indigo_property *propiedad_connect;
 
-    while (entrada->propiedadConnect == NULL)
-    {
+    do{
+        printf("Esperando a propiedad connect\n");
+        propiedad_connect = get_propiedad(entrada, CONNECTION_PROPERTY_NAME);
+        
         indigo_usleep(ONE_SECOND_DELAY);
-    }
+    }while (propiedad_connect == NULL);
 
     printf("Ya he conseguido la propiedad connect\n");
     indigo_usleep(ONE_SECOND_DELAY);
 
-    if (indigo_get_switch(entrada->propiedadConnect, CONNECTION_CONNECTED_ITEM_NAME))
+    if (indigo_get_switch(propiedad_connect, CONNECTION_CONNECTED_ITEM_NAME))
     {
         printf("Ya estaba conectado\n");
     }
@@ -36,12 +38,15 @@ void prueba_camara(indigo_client * my_client)
         printf("Me conecto yo\n");
     }
 
-    printf("Esperando a propiedad tiempo de exposicion\n");
-    while (entrada->propiedadExposicion == NULL)
+    indigo_property *propiedad_exposicion;
+
+    do
     {
+        printf("Esperando a propiedad tiempo de exposicion\n");
+        propiedad_exposicion = get_propiedad(entrada, CONNECTION_PROPERTY_NAME);
         indigo_usleep(ONE_SECOND_DELAY);
-        entrada = search(CCD_SIMULATOR);
-    }
+    } while (propiedad_exposicion == NULL);
+    
 
     printf("Ya la he conseguido, voy a hacer una foto\n");
 
@@ -77,16 +82,9 @@ static indigo_result my_define_property(indigo_client *client,
         entrada = search(property->device);
     }
 
-    print_property_list(property, message);
-
-    if (!strcmp(property->name, CONNECTION_PROPERTY_NAME))
+    if(property_match(property->name, entrada->type))
     {
-        entrada->propiedadConnect = property;
-    }
-
-    if (!strcmp(property->name, CCD_EXPOSURE_PROPERTY_NAME))
-    {
-        entrada->propiedadExposicion = property;
+        store_update_property(property, entrada);
     }
 
     if (!strcmp(property->name, CCD_IMAGE_PROPERTY_NAME))
@@ -124,21 +122,13 @@ static indigo_result my_update_property(indigo_client *client,
         entrada = search(property->device);
     }
 
-    print_property_list(property, message);
-
-    if (!strcmp(property->name, CONNECTION_PROPERTY_NAME))
+    if(property_match(property->name, entrada->type))
     {
-        entrada->propiedadConnect = property;
-    }
-
-    if (!strcmp(property->name, CCD_EXPOSURE_PROPERTY_NAME))
-    {
-        entrada->propiedadExposicion = property;
+        store_update_property(property, entrada);
     }
 
     if (!strcmp(property->name, CCD_IMAGE_PROPERTY_NAME))
     {
-        entrada->imagen = property;
         almacena_foto(entrada);
     }
 
@@ -171,40 +161,39 @@ int main(int argc, const char *argv[])
     if(read_json())
         return 1;
     
-    HashTable prueba;
+    // HashTable prueba;
 
-    initHashTable(&prueba, 3);
-    char* nombre = "Juanluis";
-    hashNombre(&prueba, nombre, "Juanluis");
-    printHashTable(prueba);
-    hashNombre(&prueba, "PEPELU", "Hola");
-    printHashTable(prueba);
-    hashInt(&prueba, "hostia", 8);
-    printHashTable(prueba);
-    hashInt(&prueba, "siuuuu", 10);
-    printHashTable(prueba);
-    char* hola = searchNombreHash(&prueba, "polla");
-    printf(hola);
-    freeHashTable(&prueba);
+    // initHashTable(&prueba, 3);
+    // char* nombre = "Juanluis";
+    // hashNombre(&prueba, nombre, "Juanluis");
+    // printHashTable(prueba);
+    // hashNombre(&prueba, "PEPELU", "Hola");
+    // printHashTable(prueba);
+    // hashInt(&prueba, "hostia", 8);
+    // printHashTable(prueba);
+    // hashInt(&prueba, "siuuuu", 10);
+    // printHashTable(prueba);
+    // char* hola = searchNombreHash(&prueba, "polla");
+    // printf(hola);
+    // freeHashTable(&prueba);
 
-    // indigo_start();
+    indigo_start();
 
-    // // Para ver los mensajes de DEBUG en pantalla
-    // indigo_set_log_level(INDIGO_LOG_DEBUG);
+    // Para ver los mensajes de DEBUG en pantalla
+    indigo_set_log_level(INDIGO_LOG_DEBUG);
 
-    // indigo_attach_client(&my_client);
+    indigo_attach_client(&my_client);
 
-    // indigo_server_entry *server;
-    // connect_all_dev(&server);
+    indigo_server_entry *server;
+    connect_all_dev(&server);
     
 
-    // prueba_camara(&my_client);
+    prueba_camara(&my_client);
 
-    // indigo_usleep(5 * ONE_SECOND_DELAY);
-    // indigo_disconnect_server(server);
-    // indigo_detach_client(&my_client);
-    // display();
-    // indigo_stop();
+    indigo_usleep(5 * ONE_SECOND_DELAY);
+    indigo_disconnect_server(server);
+    indigo_detach_client(&my_client);
+    indigo_stop();
     return 0;
 
 }

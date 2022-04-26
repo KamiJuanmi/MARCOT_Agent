@@ -13,9 +13,7 @@ typedef struct
     */
     int type;
     Array propiedades;
-    indigo_property *propiedadConnect;
-    indigo_property *propiedadExposicion;
-    indigo_property *imagen;
+    HashTable memoria_prop;
 } Dispositivo;
 
 //https://www.tutorialspoint.com/data_structures_algorithms/hash_table_program_in_c.htm
@@ -28,5 +26,10 @@ void insert(char * nombre);
 void display();
 
 void almacena_foto(Dispositivo *disp);
+
+void store_update_property(indigo_property *property, Dispositivo* disp);
+
+indigo_property *get_propiedad(Dispositivo *disp, const char* nombre);
+
 
 

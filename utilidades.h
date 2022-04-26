@@ -20,10 +20,16 @@ extern Array nombre_num_array; // nombre ... nombre tipo nombre ... nombre tipo
 
 extern int num_devices;
 
+extern HashTable *propiedades_tipo;
+
 void print_property_list(indigo_property *property, const char *message);
 
 void connect_all_dev(indigo_server_entry**);
 
 bool monitored_device(const char *device_name);
+
+bool property_match(const char *property_name, const int type);
+
+int get_tipo_device(const char* device_name);
 
 int read_json();

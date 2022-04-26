@@ -31,10 +31,10 @@ void insert(char *nombre)
 {
 
     Dispositivo *nuevo = (Dispositivo *)malloc(sizeof(Dispositivo));
-    initArray(&nuevo->propiedades, 2);
     nuevo->nombre = nombre;
-
-    // printf("%s\n",nuevo->nombre);
+    nuevo->type = get_tipo_device(nombre);
+    initArray(&nuevo->propiedades, propiedades_tipo[nuevo->type].size);
+    initHashTable(&nuevo->memoria_prop, propiedades_tipo[nuevo->type].size);
 
     int hashIndex = hashCode(nombre, SIZE);
 
@@ -72,7 +72,7 @@ void display()
 
 void almacena_foto(Dispositivo *disp)
 {
-    indigo_property *property = disp->imagen;
+    indigo_property *property = get_propiedad(disp, CCD_IMAGE_PROPERTY_NAME);
     /* URL blob transfer is available only in client - server setup.
            This will never be called in case of a client loading a driver. */
     if (*property->items[0].blob.url && indigo_populate_http_blob_item(&property->items[0]))
@@ -93,5 +93,33 @@ void almacena_foto(Dispositivo *disp)
             free(property->items[0].blob.value);
             property->items[0].blob.value = NULL;
         }
+    }
+}
+
+void store_update_property(indigo_property *property, Dispositivo* disp)
+{
+    int posicion_alm = searchIntHash(&disp->memoria_prop, property->name);
+    // En el caso de que no este
+    if(posicion_alm < 0)
+    {
+        insertPropiedad(&disp->propiedades, property);
+        hashInt(&disp->memoria_prop, property->name, disp->propiedades.used-1);
+    }else
+    {
+        updatePropiedad(&disp->propiedades, property, posicion_alm);
+    }
+}
+
+indigo_property *get_propiedad(Dispositivo *disp, const char* nombre)
+{
+    int posicion_alm = searchIntHash(&disp->memoria_prop, nombre);
+
+    // En el caso de que no este
+    if(posicion_alm < 0)
+    {
+        printf("Esa propiedad todavia no ha llegado\n");
+    }else
+    {
+        return disp->propiedades.array[posicion_alm].cont.propiedad;
     }
 }

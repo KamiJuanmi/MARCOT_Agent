@@ -74,6 +74,16 @@ void insertPropiedad(Array *a, indigo_property *property)
     insertArray(a, nuevo);
 }
 
+void updatePropiedad(Array *a, indigo_property *property, int posicion_propiedad)
+{
+    Contenido nuevo;
+    Un_Contenido aux_nuevo;
+    aux_nuevo.propiedad = property;
+    nuevo.cont = aux_nuevo;
+    nuevo.uniontype = 2;
+    a->array[posicion_propiedad] = nuevo;
+}
+
 bool estaAlmacenadoNombre(Array a, char *nombre)
 {
     for (int i = 0; i < a.used; i++)
@@ -93,6 +103,27 @@ bool estaAlmacenadoNombre(Array a, char *nombre)
         }
     }
     return false;
+}
+
+int getPosicionNombre(Array a, char *nombre)
+{
+    for (int i = 0; i < a.used; i++)
+    {
+        if(a.array[i].uniontype!=0)
+            continue;
+        for (int j = 0; j < strlen(nombre) && j < strlen(a.array[i].cont.nombre); j++)
+        {
+            if (!(nombre[j] == a.array[i].cont.nombre[j]))
+            {
+                break;
+            }
+            if(nombre[j] == '@')
+            {
+                return i;
+            }
+        }
+    }
+    return -1;
 }
 
 void freeArray(Array *a)
