@@ -261,7 +261,9 @@ int read_json(void)
         }
 
         propiedades_tipo[i] = prop_disp;
+
     }
+
 
     return 0;
 }

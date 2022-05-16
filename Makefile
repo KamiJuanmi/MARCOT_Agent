@@ -30,7 +30,7 @@ endif
 CFLAGS += $(shell pkg-config --cflags json-c)
 LDFLAGS += $(shell pkg-config --libs json-c)
 
-SRC = array.c hashtable.c utilidades.c st_disp.c cliente.c 
+SRC = array.c hashtable.c utilidades.c st_disp.c funcionalidades.c main.c
 
 OBJ = $(SRC:.c=.o)
 

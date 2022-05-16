@@ -1,6 +1,5 @@
 #include "st_disp.h"
 
-
 Dispositivo *search(const char *nombre)
 {
     int hashIndex = hashCode(nombre, SIZE);
@@ -17,14 +16,13 @@ Dispositivo *search(const char *nombre)
             return stDisp[hashIndex];
 
         // go to next cell
-        hashIndex+=s_hash;
+        hashIndex += s_hash;
 
         // wrap around the table
         hashIndex %= SIZE;
     }
 
     return NULL;
-    
 }
 
 void insert(char *nombre)
@@ -44,7 +42,7 @@ void insert(char *nombre)
     while (stDisp[hashIndex] != NULL)
     {
         // go to next cell
-        hashIndex+=s_hash;
+        hashIndex += s_hash;
 
         // wrap around the table
         hashIndex %= SIZE;
@@ -70,6 +68,25 @@ void display()
     printf("\n");
 }
 
+Array get_todo_mismo_tipo(const int type)
+{
+    Array posiciones;
+    initArray(&posiciones, 2);
+    for(int i=0; i<SIZE; i++)
+    {
+        if(stDisp[i] != NULL)
+        {
+            if(stDisp[i]->type == type)
+                insertInt(&posiciones, i);
+        }
+    }
+    return posiciones;
+}
+
+Dispositivo *get_disp_pos(const int pos){
+    return stDisp[pos];
+}
+
 void almacena_foto(Dispositivo *disp)
 {
     indigo_property *property = get_propiedad(disp, CCD_IMAGE_PROPERTY_NAME);
@@ -77,7 +94,7 @@ void almacena_foto(Dispositivo *disp)
            This will never be called in case of a client loading a driver. */
     if (*property->items[0].blob.url && indigo_populate_http_blob_item(&property->items[0]))
         indigo_log("image URL received (%s, %d bytes)...", property->items[0].blob.url, property->items[0].blob.size);
-
+    
     if (property->items[0].blob.value)
     {
         int n_disp = hashCode(disp->nombre, SIZE);
@@ -96,29 +113,31 @@ void almacena_foto(Dispositivo *disp)
     }
 }
 
-void store_update_property(indigo_property *property, Dispositivo* disp)
+void store_update_property(indigo_property *property, Dispositivo *disp)
 {
     int posicion_alm = searchIntHash(&disp->memoria_prop, property->name);
     // En el caso de que no este
-    if(posicion_alm < 0)
+    if (posicion_alm < 0)
     {
         insertPropiedad(&disp->propiedades, property);
-        hashInt(&disp->memoria_prop, property->name, disp->propiedades.used-1);
-    }else
+        hashInt(&disp->memoria_prop, property->name, disp->propiedades.used - 1);
+    }
+    else
     {
         updatePropiedad(&disp->propiedades, property, posicion_alm);
     }
 }
 
-indigo_property *get_propiedad(Dispositivo *disp, const char* nombre)
+indigo_property *get_propiedad(Dispositivo *disp, const char *nombre)
 {
     int posicion_alm = searchIntHash(&disp->memoria_prop, nombre);
 
     // En el caso de que no este
-    if(posicion_alm < 0)
+    if (posicion_alm < 0)
     {
         printf("Esa propiedad todavia no ha llegado\n");
-    }else
+    }
+    else
     {
         return disp->propiedades.array[posicion_alm].cont.propiedad;
     }
