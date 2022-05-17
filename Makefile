@@ -30,19 +30,28 @@ endif
 CFLAGS += $(shell pkg-config --cflags json-c)
 LDFLAGS += $(shell pkg-config --libs json-c)
 
-SRC = array.c hashtable.c utilidades.c st_disp.c funcionalidades.c main.c
+# https://stackoverflow.com/questions/30573481/how-to-write-a-makefile-with-separate-source-and-header-directories
 
-OBJ = $(SRC:.c=.o)
+SRC_DIR := ./src
+OBJ_DIR := ./obj
+BIN_DIR := .
 
-all: cliente rmobj
+SRC := $(wildcard $(SRC_DIR)/*.c)
+OBJ := $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SRC))
+EXE := $(BIN_DIR)/cliente
 
-cliente: $(OBJ)
+all: $(EXE)
+
+$(EXE): $(OBJ)
 	$(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS)
 
-.PHONY: clean
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
 
-rmobj:
-	rm $(OBJ)
+$(OBJ_DIR):
+	mkdir -p $@
 
 clean:
-	rm cliente 
+	@$(RM) -rv $(EXE) $(OBJ_DIR)
+
+.PHONY: all clean
