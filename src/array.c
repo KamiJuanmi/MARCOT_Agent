@@ -1,4 +1,4 @@
-#include "array.h"
+#include "../include/array.h"
 
 int hashCode(const char *nombre, const int size)
 {
@@ -101,6 +101,20 @@ bool estaAlmacenadoNombre(Array a, char *nombre)
                 return true;
             }
         }
+    }
+    return false;
+}
+
+bool estaAlmacenadoInt(Array a, int elemento)
+{
+    for (int i = 0; i < a.used; i++)
+    {
+        if(a.array[i].uniontype!=1)
+            continue;
+
+        // printf("El elemento a  comparar es este %i, comparandose con %i\n", elemento, a.array[i].cont.num_array);
+        if(elemento == a.array[i].cont.num_array)
+            return true;
     }
     return false;
 }

@@ -1,4 +1,4 @@
-#include "st_disp.h"
+#include "../include/st_disp.h"
 
 Dispositivo *search(const char *nombre)
 {
@@ -99,7 +99,7 @@ void almacena_foto(Dispositivo *disp)
     {
         int n_disp = hashCode(disp->nombre, SIZE);
         char name[32];
-        sprintf(name, "img_disp_%02d.jpeg", n_disp);
+        sprintf(name, "./img/img_disp_%02d.jpeg", n_disp);
         FILE *f = fopen(name, "wb");
         fwrite(property->items[0].blob.value, property->items[0].blob.size, 1, f);
         fclose(f);

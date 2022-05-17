@@ -40,6 +40,8 @@ void updatePropiedad(Array *a, indigo_property *property, int posicion_propiedad
 
 bool estaAlmacenadoNombre(Array a, char* nombre);
 
+bool estaAlmacenadoInt(Array a, int elemento);
+
 int getPosicionNombre(Array a, char *nombre);
 
 void freeArray(Array *a);

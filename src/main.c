@@ -1,4 +1,4 @@
-#include "funcionalidades.h"
+#include "../include/funcionalidades.h"
 
 static indigo_result my_attach(indigo_client *client)
 {
@@ -121,10 +121,11 @@ int main(int argc, const char *argv[])
     
     indigo_usleep(2 * ONE_SECOND_DELAY);
     conecta_all_cameras(&my_client);
-    set_exposure_all_cameras(&my_client);
-    indigo_usleep(10 * ONE_SECOND_DELAY);
+    set_wait_exposure_cameras(&my_client, 1.0);
+    indigo_usleep(5 * ONE_SECOND_DELAY);
     indigo_disconnect_server(server);
     indigo_detach_client(&my_client);
+    indigo_log("YA HE ACABADO");
     indigo_stop();
     return 0;
 

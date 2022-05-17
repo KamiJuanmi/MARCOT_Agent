@@ -1,4 +1,4 @@
-#include "hashtable.h"
+#include "../include/hashtable.h"
 
 void initHashTable(HashTable *ht, size_t initialSize)
 {
