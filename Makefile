@@ -34,15 +34,23 @@ LDFLAGS += $(shell pkg-config --libs json-c)
 
 SRC_DIR := ./src
 OBJ_DIR := ./obj
-BIN_DIR := .
+BIN_DIR := ./bin
 
-SRC := $(wildcard $(SRC_DIR)/*.c)
+SRC := $(filter-out $(SRC_DIR)/driver_main.c, $(wildcard $(SRC_DIR)/*.c))
 OBJ := $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SRC))
 EXE := $(BIN_DIR)/cliente
 
-all: $(EXE)
+SRC_2 := $(filter-out $(SRC_DIR)/client_main.c, $(wildcard $(SRC_DIR)/*.c))
+OBJ_2 := $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SRC_2))
+EXE_2 := $(BIN_DIR)/agent
 
-$(EXE): $(OBJ)
+cliente: $(EXE)
+agent: $(EXE_2)
+
+$(EXE): $(OBJ) | $(BIN_DIR)
+	$(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS)
+
+$(EXE_2): $(OBJ_2) | $(BIN_DIR)
 	$(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
@@ -51,7 +59,10 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
 $(OBJ_DIR):
 	mkdir -p $@
 
-clean:
-	@$(RM) -rv $(EXE) $(OBJ_DIR)
+$(BIN_DIR):
+	mkdir -p $@
 
-.PHONY: all clean
+clean:
+	@$(RM) -rv $(BIN_DIR) $(OBJ_DIR)
+
+.PHONY: cliente driver clean

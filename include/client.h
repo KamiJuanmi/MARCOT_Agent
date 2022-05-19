@@ -86,8 +86,6 @@ static indigo_result my_detach(indigo_client *client)
     return INDIGO_OK;
 }
 
-
-
 static indigo_client my_client = {
     "MyClient",             // client name
     false,                  // is this a remote client "no" - this is us
@@ -103,30 +101,4 @@ static indigo_client my_client = {
     NULL,
     my_detach};
 
-int main(int argc, const char *argv[])
-{
-    if(read_json())
-        return 1;
-
-    indigo_start();
-
-    // Para ver los mensajes de DEBUG en pantalla
-    indigo_set_log_level(INDIGO_LOG_DEBUG);
-
-    indigo_attach_client(&my_client);
-
-    indigo_server_entry *server;
-    connect_all_dev(&server);
-    
-    
-    indigo_usleep(2 * ONE_SECOND_DELAY);
-    conecta_all_cameras(&my_client);
-    set_wait_exposure_cameras(&my_client, 1.0);
-    indigo_usleep(5 * ONE_SECOND_DELAY);
-    indigo_disconnect_server(server);
-    indigo_detach_client(&my_client);
-    indigo_log("YA HE ACABADO");
-    indigo_stop();
-    return 0;
-
-}
+static indigo_server_entry *server;

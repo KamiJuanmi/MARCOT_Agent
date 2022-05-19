@@ -54,6 +54,48 @@ void conecta_all_cameras(indigo_client *my_client)
     freeArray(&posiciones);
 }
 
+void desconecta_dispositivo_disp(indigo_client *my_client, Dispositivo *disp)
+{
+    indigo_property *propiedad_connect;
+    propiedad_connect = get_propiedad(disp, CONNECTION_PROPERTY_NAME);
+
+    while (propiedad_connect == NULL)
+    {
+
+        // printf("Esperando a propiedad connect\n");
+        indigo_usleep(ONE_SECOND_DELAY);
+        propiedad_connect = get_propiedad(disp, CONNECTION_PROPERTY_NAME);
+    }
+
+    // printf("Ya he conseguido la propiedad connect\n");
+
+    if (!indigo_get_switch(propiedad_connect, CONNECTION_CONNECTED_ITEM_NAME))
+    {
+        // printf("No estaba conectado\n");
+
+
+        // printf("Me conecto yo\n");
+    }
+    else
+    {
+        
+        indigo_device_disconnect(my_client, disp->nombre);
+        // printf("Ya estaba conectado\n");
+    }
+}
+
+void desconecta_all_cameras(indigo_client *my_client)
+{
+    Array posiciones;
+    posiciones = get_todo_mismo_tipo(0);
+    for (int i = 0; i < posiciones.used; i++)
+    {
+        int posicion = posiciones.array[i].cont.num_array;
+        desconecta_dispositivo_disp(my_client, get_disp_pos(posicion));
+    }
+    freeArray(&posiciones);
+}
+
 void set_exposure_camera(indigo_client *my_client, char *camara, const double sec)
 {
     Dispositivo *entrada = search(camara);

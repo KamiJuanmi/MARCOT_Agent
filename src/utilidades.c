@@ -132,7 +132,7 @@ void print_property_list(indigo_property *property, const char *message)
         printf("\n");
 }
 
-void connect_all_dev(indigo_server_entry **server)
+indigo_result connect_all_dev(indigo_server_entry **server)
 {
     int port_ini = 8000;
     char host[9] = "indigo_x";
@@ -142,6 +142,7 @@ void connect_all_dev(indigo_server_entry **server)
         host[7] = i + '0';
         indigo_connect_server(host, host, port_ini + i, server);
     }
+    indigo_usleep(2 * ONE_SECOND_DELAY);
 }
 
 bool monitored_device(const char *device_name)
@@ -171,7 +172,7 @@ int get_tipo_device(const char* device_name)
     return -1;
 }
 
-int read_json(void)
+int read_json_client(void)
 {
     FILE *fp;
     char buffer[1024];

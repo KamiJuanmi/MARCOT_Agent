@@ -6,6 +6,8 @@ void conecta_dispositivo_disp(indigo_client *my_client, Dispositivo *disp);
 
 void conecta_all_cameras(indigo_client *my_client);
 
+void desconecta_all_cameras(indigo_client *my_client);
+
 void set_exposure_camera(indigo_client *my_client, char* camara, const double sec);
 
 void set_exposure_camera_disp(indigo_client *my_client, Dispositivo *disp, const double sec);
