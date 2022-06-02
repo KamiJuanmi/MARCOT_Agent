@@ -2,11 +2,7 @@
 
 static indigo_result my_attach(indigo_client *client)
 {
-    indigo_log("attached to INDIGO bus...");
-
-    // Request property definitions
     indigo_enumerate_properties(client, &INDIGO_ALL_PROPERTIES);
-
     return INDIGO_OK;
 }
 

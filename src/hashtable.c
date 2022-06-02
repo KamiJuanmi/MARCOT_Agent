@@ -196,3 +196,27 @@ void printHashTable(HashTable ht)
     }
     printf("\n");
 }
+
+void indigo_log_HashTable(HashTable ht)
+{
+    for(int i=0; i<ht.size; i++)
+    {
+        if(ht.ht[i].uniontype != 1 && ht.ht[i].uniontype != 2)
+        {
+            indigo_log(" ~~ ");
+        }else{
+            indigo_log(" %s ", ht.ht[i].key);
+            switch (ht.ht[i].uniontype)
+            {
+            case 1: //Es un string
+                indigo_log(" %s ", ht.ht[i].cont.nombre);
+                break;
+            case 2: //Es un numero
+                indigo_log(" %i ", ht.ht[i].cont.posicion);
+                break;
+            default:
+                break;
+            }
+        }
+    }
+}

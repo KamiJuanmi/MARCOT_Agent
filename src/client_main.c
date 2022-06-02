@@ -1,5 +1,14 @@
 #include "../include/client.h"
 
+static indigo_client my_client = {
+    "MyClient", false, NULL, INDIGO_OK, INDIGO_VERSION_CURRENT, NULL,                   
+    my_attach,
+    my_define_property,
+    my_update_property,
+    NULL,
+    NULL,
+    my_detach};
+
 int main(int argc, const char *argv[])
 {
     if(read_json_client())

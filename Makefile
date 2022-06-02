@@ -36,7 +36,7 @@ SRC_DIR := ./src
 OBJ_DIR := ./obj
 BIN_DIR := ./bin
 
-SRC := $(filter-out $(SRC_DIR)/driver_main.c, $(wildcard $(SRC_DIR)/*.c))
+SRC := $(filter-out $(SRC_DIR)/agent_main.c, $(wildcard $(SRC_DIR)/*.c))
 OBJ := $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SRC))
 EXE := $(BIN_DIR)/cliente
 
@@ -44,8 +44,8 @@ SRC_2 := $(filter-out $(SRC_DIR)/client_main.c, $(wildcard $(SRC_DIR)/*.c))
 OBJ_2 := $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SRC_2))
 EXE_2 := $(BIN_DIR)/agent
 
-cliente: $(EXE)
 agent: $(EXE_2)
+cliente: $(EXE)
 
 $(EXE): $(OBJ) | $(BIN_DIR)
 	$(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS)

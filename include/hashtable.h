@@ -43,3 +43,5 @@ int searchIntHash(HashTable *ht, char* key);
 void freeHashTable(HashTable *ht);
 
 void printHashTable(HashTable ht);
+
+void indigo_log_HashTable(HashTable ht);

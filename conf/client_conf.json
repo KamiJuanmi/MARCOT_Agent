@@ -1,5 +1,5 @@
 {
-    "number_devices": 5,
+    "number_devices": 4,
     "devices": [
         {
             "names": [
@@ -8,7 +8,11 @@
             "properties": [
                 "CONNECTION",
                 "CCD_EXPOSURE",
-                "CCD_IMAGE"
+                "CCD_IMAGE",
+                "CCD_GAIN",
+                "CCD_COOLER",
+                "CCD_TEMPERATURE",
+                "CCD_COOLER_POWER"
             ]
         },
         {
@@ -16,10 +20,9 @@
                 "Mount Simulator @"
             ],
             "properties": [
-                "Montura montura",
-                "Hola hola",
-                "Chema la bagoneta",
-                "Juanluis"
+                "CONNECTION",
+                "MOUNT_PARK",
+                "MOUNT_EQUATORIAL_COORDINATES"
             ]
         }
     ]

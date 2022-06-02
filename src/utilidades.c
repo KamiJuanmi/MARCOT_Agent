@@ -2,7 +2,7 @@
 
 struct json_object *parsed_json;
 Array nombre_dispositivos;
-HashTable* propiedades_tipo;
+HashTable *propiedades_tipo;
 int num_devices;
 
 void print_property_list(indigo_property *property, const char *message)
@@ -142,7 +142,7 @@ indigo_result connect_all_dev(indigo_server_entry **server)
         host[7] = i + '0';
         indigo_connect_server(host, host, port_ini + i, server);
     }
-    indigo_usleep(2 * ONE_SECOND_DELAY);
+    indigo_usleep(0.1 * ONE_SECOND_DELAY);
 }
 
 bool monitored_device(const char *device_name)
@@ -161,12 +161,12 @@ bool property_match(const char *property_name, const int type)
     return checkeaKey(&propiedades, property_name);
 }
 
-int get_tipo_device(const char* device_name)
+int get_tipo_device(const char *device_name)
 {
     int i = getPosicionNombre(nombre_dispositivos, device_name);
-    for(i; i<nombre_dispositivos.used; i++)
+    for (i; i < nombre_dispositivos.used; i++)
     {
-        if(nombre_dispositivos.array[i].uniontype==1)
+        if (nombre_dispositivos.array[i].uniontype == 1)
             return nombre_dispositivos.array[i].cont.num_array;
     }
     return -1;
@@ -177,7 +177,7 @@ int read_json_client(void)
     FILE *fp;
     char buffer[1024];
 
-    fp = fopen("conf.json", "r");
+    fp = fopen("conf/client_conf.json", "r");
     if (fp == NULL)
     {
         printf("Error al abrir el archivo json.");
@@ -192,16 +192,16 @@ int read_json_client(void)
 
     parsed_json = json_tokener_parse(buffer);
 
-    struct json_object *number_devices;
+    // struct json_object *number_devices;
 
-    if (!json_object_object_get_ex(parsed_json, "number_devices", &number_devices))
-    {
-        printf("Error al extraer el numero de dispositivos del fichero JSON\n");
-    }
-    else
-    {
-        num_devices = json_object_get_int(number_devices);
-    }
+    // if (!json_object_object_get_ex(parsed_json, "number_devices", &number_devices))
+    // {
+    //     printf("Error al extraer el numero de dispositivos del fichero JSON\n");
+    // }
+    // else
+    // {
+    //     num_devices = json_object_get_int(number_devices);
+    // }
 
     struct json_object *devices;
     struct array_list *dispositivos;
@@ -262,9 +262,59 @@ int read_json_client(void)
         }
 
         propiedades_tipo[i] = prop_disp;
-
     }
 
-
     return 0;
+}
+
+int read_agent_conf()
+{
+    FILE *fp = fopen("conf/agent.conf", "r");
+    bool conf = true;
+    bool line_ze = true;
+    int port;
+    if (fp != NULL)
+    {
+        char line[20];
+        while (fgets(line, sizeof line, fp) != NULL)
+        {
+            line[strcspn(line, "\n")] = 0;
+            if (line_ze)
+            {
+                num_devices = strtoll(line, NULL, 10);
+                printf("El hosddddt %i\n", num_devices);
+                
+                line_ze = false;
+            }
+            else
+            {
+                if (conf)
+                    printf("El host %s\n", line);
+                else
+                {
+                    port = strtoll(line, NULL, 10);
+                    printf("El puerto %i\n", port);
+                }
+                conf = !conf;
+            }
+        }
+        fclose(fp);
+        return true;
+    }
+    else
+        return false;
+}
+
+FILE *abrir_conf_n_disp(int n_disp)
+{
+    FILE *fp = fopen("conf/agent.conf", "w");
+    fprintf(fp, "%i", n_disp);
+    return fp;
+}
+
+void escribe_host_port(FILE *fp, char* host, int port)
+{
+    fprintf(fp, "\n%s\n", host);
+    fprintf(fp, "%i", port);
+    
 }
