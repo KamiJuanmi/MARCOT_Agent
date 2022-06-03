@@ -32,11 +32,6 @@ extern "C" {
 
 #define URL_PROPERTY (PRIVATE_DATA->url_property)
 
-#define CONF_PREV_PROPERTY (PRIVATE_DATA->conf_prev_property)
-#define CONF_PREV_PROPERTY_ITEM_ON (CONF_PREV_PROPERTY->items + 0)
-#define CONF_PREV_PROPERTY_ITEM_OFF (CONF_PREV_PROPERTY->items + 1)
-#define N_DISP_PROPERTY (PRIVATE_DATA->n_dispositivos_property)
-
 #define REFRIG_POWER_PROPERTY (PRIVATE_DATA->refrig_power)
 #define REFRIG_POWER_PROPERTY_ITEM (REFRIG_POWER_PROPERTY->items + 0)
 
@@ -60,6 +55,20 @@ extern "C" {
 #define MONTURA_PARK_PARKED_ITEM (MONTURA_PARK_PROPERTY->items+0)
 #define MONTURA_PARK_UNPARKED_ITEM (MONTURA_PARK_PROPERTY->items+1)
 
+#define CONF_PREV_PROPERTY (PRIVATE_DATA->conf_prev_property)
+#define CONF_PREV_PROPERTY_ITEM_ON (CONF_PREV_PROPERTY->items + 0)
+#define CONF_PREV_PROPERTY_ITEM_OFF (CONF_PREV_PROPERTY->items + 1)
+#define N_DISP_PROPERTY (PRIVATE_DATA->n_dispositivos_property)
+
+#define DISP_0_PROPERTY (PRIVATE_DATA->disp_0)
+#define DISP_1_PROPERTY (PRIVATE_DATA->disp_1)
+#define DISP_2_PROPERTY (PRIVATE_DATA->disp_2)
+#define DISP_3_PROPERTY (PRIVATE_DATA->disp_3)
+#define DISP_4_PROPERTY (PRIVATE_DATA->disp_4)
+#define DISP_5_PROPERTY (PRIVATE_DATA->disp_5)
+#define DISP_6_PROPERTY (PRIVATE_DATA->disp_6)
+#define DISP_7_PROPERTY (PRIVATE_DATA->disp_7)
+
 typedef struct
 {
     double target_exposicion, current_exposicion;
@@ -67,8 +76,17 @@ typedef struct
     indigo_property *gain_property;
     indigo_property *url_property;
 
+    double current_disp, target_disp;
     indigo_property *conf_prev_property;
     indigo_property *n_dispositivos_property;
+    indigo_property *disp_0;
+    indigo_property *disp_1;
+    indigo_property *disp_2;
+    indigo_property *disp_3;
+    indigo_property *disp_4;
+    indigo_property *disp_5;
+    indigo_property *disp_6;
+    indigo_property *disp_7;
 
     indigo_property *refrig_power;
     indigo_property *refrig_status;

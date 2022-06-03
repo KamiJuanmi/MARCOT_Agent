@@ -2,6 +2,7 @@
 
 struct json_object *parsed_json;
 Array nombre_dispositivos;
+Array host_puertos;
 HashTable *propiedades_tipo;
 int num_devices;
 
@@ -132,19 +133,6 @@ void print_property_list(indigo_property *property, const char *message)
         printf("\n");
 }
 
-indigo_result connect_all_dev(indigo_server_entry **server)
-{
-    int port_ini = 8000;
-    char host[9] = "indigo_x";
-
-    for (int i = 0; i < num_devices; i++)
-    {
-        host[7] = i + '0';
-        indigo_connect_server(host, host, port_ini + i, server);
-    }
-    indigo_usleep(0.1 * ONE_SECOND_DELAY);
-}
-
 bool monitored_device(const char *device_name)
 {
     if (estaAlmacenadoNombre(nombre_dispositivos, device_name))
@@ -273,6 +261,7 @@ int read_agent_conf()
     bool conf = true;
     bool line_ze = true;
     int port;
+    initArray(&host_puertos, 2);
     if (fp != NULL)
     {
         char line[20];
@@ -282,23 +271,25 @@ int read_agent_conf()
             if (line_ze)
             {
                 num_devices = strtoll(line, NULL, 10);
-                printf("El hosddddt %i\n", num_devices);
-                
+
                 line_ze = false;
             }
             else
             {
                 if (conf)
-                    printf("El host %s\n", line);
+                {
+                    insertNombre(&host_puertos, line);
+                }
                 else
                 {
                     port = strtoll(line, NULL, 10);
-                    printf("El puerto %i\n", port);
+                    insertInt(&host_puertos, port);
                 }
                 conf = !conf;
             }
         }
         fclose(fp);
+        printArray(host_puertos);
         return true;
     }
     else
@@ -312,9 +303,28 @@ FILE *abrir_conf_n_disp(int n_disp)
     return fp;
 }
 
-void escribe_host_port(FILE *fp, char* host, int port)
+void escribe_host_port(FILE *fp, char *host, int port)
 {
     fprintf(fp, "\n%s\n", host);
     fprintf(fp, "%i", port);
-    
+}
+
+void escribe_nueva_config(indigo_property *n_disp_prop, Array prop_disp)
+{
+    int n_disp = n_disp_prop->items->number.value;
+
+    FILE *fp;
+    fp = abrir_conf_n_disp(n_disp_prop->items->number.value);
+    for (int i = 0; i < n_disp; i++)
+    {
+        char *host = malloc(128 * sizeof(char));
+        char *port = malloc(128 * sizeof(char));
+        int port_nb;
+
+        strcpy(host, prop_disp.array[i].cont.propiedad->items[0].text.value);
+        strcpy(port, prop_disp.array[i].cont.propiedad->items[1].text.value);
+        port_nb = strtoll(port, NULL, 10);
+        escribe_host_port(fp, host, port_nb);
+    }
+    fclose(fp);
 }

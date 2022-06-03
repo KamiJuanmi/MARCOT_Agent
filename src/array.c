@@ -48,7 +48,9 @@ void insertNombre(Array *a, char *nombre)
 {
     Contenido nuevo;
     Un_Contenido aux_nuevo;
-    aux_nuevo.nombre = nombre;
+    char aux_nombre[256];
+    aux_nuevo.nombre = malloc(128 * sizeof(char));
+    strcpy(aux_nuevo.nombre, nombre);
     nuevo.cont = aux_nuevo;
     nuevo.uniontype = 0;
     insertArray(a, nuevo);
@@ -157,7 +159,7 @@ void printArray(Array a)
             printf("%s", a.array[i].cont.nombre);
             break;
         case 1:
-            printf("%d", a.array[i].cont.num_array);
+            printf("%i", a.array[i].cont.num_array);
             break;
         }
         printf("\t");

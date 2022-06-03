@@ -2,6 +2,30 @@
 
 int n_camaras;
 
+indigo_result connect_all_dev(indigo_server_entry **server)
+{
+    int port_ini = 8000;
+    char host[9] = "indigo_x";
+
+    for (int i = 0; i < num_devices; i++)
+    {
+        host[7] = i + '0';
+        indigo_connect_server(host, host, port_ini + i, server);
+    }
+    indigo_usleep(0.1 * ONE_SECOND_DELAY);
+}
+
+indigo_result connect_config(indigo_server_entry **server)
+{
+    for(int i = 0; i < host_puertos.used; i+=2)
+    {
+        char *host = host_puertos.array[i].cont.nombre;
+        int puerto = host_puertos.array[i+1].cont.num_array;
+        indigo_connect_server(host, host, puerto, server);
+    }
+    indigo_usleep(0.1 * ONE_SECOND_DELAY);
+}
+
 void conecta_dispositivo(indigo_client *my_client, char *nom_disp)
 {
     Dispositivo *entrada = search(nom_disp);
@@ -37,6 +61,8 @@ void conecta_all_cameras(indigo_client *my_client)
 {
     Array posiciones;
     posiciones = get_todo_mismo_tipo(0);
+    if(posiciones.used == 0)
+        return;
     n_camaras = posiciones.used;
     for (int i = 0; i < posiciones.used; i++)
     {
@@ -67,6 +93,8 @@ void desconecta_all_cameras(indigo_client *my_client)
 {
     Array posiciones;
     posiciones = get_todo_mismo_tipo(0);
+    if(posiciones.used == 0)
+        return;
     for (int i = 0; i < posiciones.used; i++)
     {
         int posicion = posiciones.array[i].cont.num_array;
@@ -79,6 +107,8 @@ void conecta_montura(indigo_client *my_client)
 {
     Array posiciones;
     posiciones = get_todo_mismo_tipo(1);
+    if(posiciones.used == 0)
+        return;
     int posicion = posiciones.array[0].cont.num_array;
 
     conecta_dispositivo_disp(my_client, get_disp_pos(posicion));
@@ -89,6 +119,8 @@ void desconecta_montura(indigo_client *my_client)
 {
     Array posiciones;
     posiciones = get_todo_mismo_tipo(1);
+    if(posiciones.used == 0)
+        return;
     int posicion = posiciones.array[0].cont.num_array;
 
     desconecta_dispositivo_disp(my_client, get_disp_pos(posicion));

@@ -16,6 +16,9 @@ static bool reducir_print = true;
 
 extern struct json_object *parsed_json;
 
+// host puerto host puerto...
+extern Array host_puertos; 
+
 extern Array nombre_num_array; // nombre ... nombre tipo nombre ... nombre tipo
 
 extern int num_devices;
@@ -23,8 +26,6 @@ extern int num_devices;
 extern HashTable *propiedades_tipo;
 
 void print_property_list(indigo_property *property, const char *message);
-
-indigo_result connect_all_dev(indigo_server_entry**);
 
 bool monitored_device(const char *device_name);
 
@@ -39,3 +40,5 @@ int read_agent_conf();
 FILE *abrir_conf_n_disp(int n_disp);
 
 void escribe_host_port(FILE *fp, char* host, int port);
+
+void escribe_nueva_config(indigo_property *n_disp_prop, Array prop_disp);

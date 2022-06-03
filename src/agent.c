@@ -24,10 +24,130 @@ static indigo_client *agent_client = NULL;
 int posicion_url = 0;
 int act_exp = 0, act_power = 0, act_temp = 0, act_status = 0;
 
+Array prop_disp;
+
 static indigo_result agent_enumerate_properties(indigo_device *device, indigo_client *client, indigo_property *property);
+static indigo_result oculta_x_disp(indigo_device *device, int value);
+
 static indigo_result agent_define_conf_properties(indigo_device *device)
 {
     indigo_define_property(device, N_DISP_PROPERTY, NULL);
+}
+
+static indigo_result agent_delete_conf_properties(indigo_device *device)
+{
+    N_DISP_PROPERTY->items->number.value = 0;
+    indigo_update_property(device, N_DISP_PROPERTY, NULL);
+    indigo_delete_property(device, N_DISP_PROPERTY, NULL);
+    for (int i = 0; i < PRIVATE_DATA->current_disp; i++)
+        oculta_x_disp(device, i);
+    PRIVATE_DATA->current_disp = 0;
+}
+
+static indigo_result init_disp_properties(indigo_device *device)
+{
+    initArray(&prop_disp, 7);
+    DISP_0_PROPERTY = indigo_init_text_property(NULL, device->name, "Dispositivo 0", MAIN_GROUP, "Dispositivo 0", INDIGO_OK_STATE, INDIGO_RW_PERM, 2);
+    if (DISP_0_PROPERTY == NULL)
+        return INDIGO_FAILED;
+    indigo_init_text_item(DISP_0_PROPERTY->items + 0, "Host", "Host", NULL);
+    indigo_init_text_item(DISP_0_PROPERTY->items + 1, "Port", "Port", NULL);
+    DISP_1_PROPERTY = indigo_init_text_property(NULL, device->name, "Dispositivo 1", MAIN_GROUP, "Dispositivo 1", INDIGO_OK_STATE, INDIGO_RW_PERM, 2);
+    if (DISP_1_PROPERTY == NULL)
+        return INDIGO_FAILED;
+    indigo_init_text_item(DISP_1_PROPERTY->items + 0, "Host", "Host", NULL);
+    indigo_init_text_item(DISP_1_PROPERTY->items + 1, "Port", "Port", NULL);
+    DISP_2_PROPERTY = indigo_init_text_property(NULL, device->name, "Dispositivo 2", MAIN_GROUP, "Dispositivo 2", INDIGO_OK_STATE, INDIGO_RW_PERM, 2);
+    if (DISP_2_PROPERTY == NULL)
+        return INDIGO_FAILED;
+    indigo_init_text_item(DISP_2_PROPERTY->items + 0, "Host", "Host", NULL);
+    indigo_init_text_item(DISP_2_PROPERTY->items + 1, "Port", "Port", NULL);
+    DISP_3_PROPERTY = indigo_init_text_property(NULL, device->name, "Dispositivo 3", MAIN_GROUP, "Dispositivo 3", INDIGO_OK_STATE, INDIGO_RW_PERM, 2);
+    if (DISP_3_PROPERTY == NULL)
+        return INDIGO_FAILED;
+    indigo_init_text_item(DISP_3_PROPERTY->items + 0, "Host", "Host", NULL);
+    indigo_init_text_item(DISP_3_PROPERTY->items + 1, "Port", "Port", NULL);
+    DISP_4_PROPERTY = indigo_init_text_property(NULL, device->name, "Dispositivo 4", MAIN_GROUP, "Dispositivo 4", INDIGO_OK_STATE, INDIGO_RW_PERM, 2);
+    if (DISP_4_PROPERTY == NULL)
+        return INDIGO_FAILED;
+    indigo_init_text_item(DISP_4_PROPERTY->items + 0, "Host", "Host", NULL);
+    indigo_init_text_item(DISP_4_PROPERTY->items + 1, "Port", "Port", NULL);
+    DISP_5_PROPERTY = indigo_init_text_property(NULL, device->name, "Dispositivo 5", MAIN_GROUP, "Dispositivo 5", INDIGO_OK_STATE, INDIGO_RW_PERM, 2);
+    if (DISP_5_PROPERTY == NULL)
+        return INDIGO_FAILED;
+    indigo_init_text_item(DISP_5_PROPERTY->items + 0, "Host", "Host", NULL);
+    indigo_init_text_item(DISP_5_PROPERTY->items + 1, "Port", "Port", NULL);
+    DISP_6_PROPERTY = indigo_init_text_property(NULL, device->name, "Dispositivo 6", MAIN_GROUP, "Dispositivo 6", INDIGO_OK_STATE, INDIGO_RW_PERM, 2);
+    if (DISP_6_PROPERTY == NULL)
+        return INDIGO_FAILED;
+    indigo_init_text_item(DISP_6_PROPERTY->items + 0, "Host", "Host", NULL);
+    indigo_init_text_item(DISP_6_PROPERTY->items + 1, "Port", "Port", NULL);
+    DISP_7_PROPERTY = indigo_init_text_property(NULL, device->name, "Dispositivo 7", MAIN_GROUP, "Dispositivo 7", INDIGO_OK_STATE, INDIGO_RW_PERM, 2);
+    if (DISP_7_PROPERTY == NULL)
+        return INDIGO_FAILED;
+    indigo_init_text_item(DISP_7_PROPERTY->items + 0, "Host", "Host", NULL);
+    indigo_init_text_item(DISP_7_PROPERTY->items + 1, "Port", "Port", NULL);
+
+    insertPropiedad(&prop_disp, DISP_0_PROPERTY);
+    insertPropiedad(&prop_disp, DISP_1_PROPERTY);
+    insertPropiedad(&prop_disp, DISP_2_PROPERTY);
+    insertPropiedad(&prop_disp, DISP_3_PROPERTY);
+    insertPropiedad(&prop_disp, DISP_4_PROPERTY);
+    insertPropiedad(&prop_disp, DISP_5_PROPERTY);
+    insertPropiedad(&prop_disp, DISP_6_PROPERTY);
+    insertPropiedad(&prop_disp, DISP_7_PROPERTY);
+}
+
+static indigo_result muestra_x_disp(indigo_device *device, int value)
+{
+    indigo_define_property(device, prop_disp.array[value].cont.propiedad, NULL);
+}
+
+static indigo_result oculta_x_disp(indigo_device *device, int value)
+{
+    indigo_delete_property(device, prop_disp.array[value].cont.propiedad, NULL);
+}
+
+
+
+static indigo_result agent_habilita_conf_properties(indigo_device *device, bool value)
+{
+    if (value)
+    {
+        CONF_PREV_PROPERTY->state = INDIGO_IDLE_STATE;
+        N_DISP_PROPERTY->state = INDIGO_IDLE_STATE;
+        DISP_0_PROPERTY->state = INDIGO_IDLE_STATE;
+        DISP_1_PROPERTY->state = INDIGO_IDLE_STATE;
+        DISP_2_PROPERTY->state = INDIGO_IDLE_STATE;
+        DISP_3_PROPERTY->state = INDIGO_IDLE_STATE;
+        DISP_4_PROPERTY->state = INDIGO_IDLE_STATE;
+        DISP_5_PROPERTY->state = INDIGO_IDLE_STATE;
+        DISP_6_PROPERTY->state = INDIGO_IDLE_STATE;
+        DISP_7_PROPERTY->state = INDIGO_IDLE_STATE;
+    }
+    else
+    {
+        CONF_PREV_PROPERTY->state = INDIGO_OK_STATE;
+        N_DISP_PROPERTY->state = INDIGO_OK_STATE;
+        DISP_0_PROPERTY->state = INDIGO_OK_STATE;
+        DISP_1_PROPERTY->state = INDIGO_OK_STATE;
+        DISP_2_PROPERTY->state = INDIGO_OK_STATE;
+        DISP_3_PROPERTY->state = INDIGO_OK_STATE;
+        DISP_4_PROPERTY->state = INDIGO_OK_STATE;
+        DISP_5_PROPERTY->state = INDIGO_OK_STATE;
+        DISP_6_PROPERTY->state = INDIGO_OK_STATE;
+        DISP_7_PROPERTY->state = INDIGO_OK_STATE;
+    }
+    indigo_update_property(device, CONF_PREV_PROPERTY, NULL);
+    indigo_update_property(device, N_DISP_PROPERTY, NULL);
+    indigo_update_property(device, DISP_0_PROPERTY, NULL);
+    indigo_update_property(device, DISP_1_PROPERTY, NULL);
+    indigo_update_property(device, DISP_2_PROPERTY, NULL);
+    indigo_update_property(device, DISP_3_PROPERTY, NULL);
+    indigo_update_property(device, DISP_4_PROPERTY, NULL);
+    indigo_update_property(device, DISP_5_PROPERTY, NULL);
+    indigo_update_property(device, DISP_6_PROPERTY, NULL);
+    indigo_update_property(device, DISP_7_PROPERTY, NULL);
 }
 
 static indigo_result agent_attach(indigo_device *device)
@@ -36,6 +156,7 @@ static indigo_result agent_attach(indigo_device *device)
     assert(PRIVATE_DATA != NULL);
     assert(read_agent_conf());
     assert(!read_json_client());
+    PRIVATE_DATA->current_disp = 0;
     if (indigo_device_attach(device, DRIVER_NAME, DRIVER_VERSION, 0) == INDIGO_OK)
     {
         CONFIG_PROPERTY->hidden = true;
@@ -60,7 +181,6 @@ static indigo_result agent_attach(indigo_device *device)
             return INDIGO_FAILED;
         indigo_init_switch_item(REFRIG_STATUS_PROPERTY_ITEM_ON, CCD_COOLER_ON_ITEM_NAME, "Encendida", true);
         indigo_init_switch_item(REFRIG_STATUS_PROPERTY_ITEM_OFF, CCD_COOLER_OFF_ITEM_NAME, "Apagada", false);
-
         // -------------------------------------------------------------------------------- Potencia de refrigeracion
         REFRIG_POWER_PROPERTY = indigo_init_number_property(NULL, device->name, "Potencia", GRUPO_REFRIGERACION, "Potencia refrigeracion", INDIGO_OK_STATE, INDIGO_RO_PERM, 1);
         if (REFRIG_POWER_PROPERTY == NULL)
@@ -89,7 +209,7 @@ static indigo_result agent_attach(indigo_device *device)
         N_DISP_PROPERTY = indigo_init_number_property(NULL, device->name, "Conexion", MAIN_GROUP, "Dispositivos a conectar", INDIGO_OK_STATE, INDIGO_RW_PERM, 1);
         if (EXPOSICION_PROPERTY == NULL)
             return INDIGO_FAILED;
-        indigo_init_number_item(N_DISP_PROPERTY->items + 0, "Dispositivos", "Dispositivos", 0, 9, 1, 0);
+        indigo_init_number_item(N_DISP_PROPERTY->items + 0, "Dispositivos", "Dispositivos", 0, 7, 1, 0);
         // -------------------------------------------------------------------------------- Inicio de la propiedad de configuracion previa
         CONF_PREV_PROPERTY = indigo_init_switch_property(NULL, device->name, "Configuracion previa", MAIN_GROUP, "Configuracion previa", INDIGO_OK_STATE, INDIGO_RW_PERM, INDIGO_ONE_OF_MANY_RULE, 2);
         if (CONF_PREV_PROPERTY == NULL)
@@ -98,6 +218,8 @@ static indigo_result agent_attach(indigo_device *device)
         indigo_init_switch_item(CONF_PREV_PROPERTY_ITEM_OFF, "Nueva configuracion", "Nueva configuracion", false);
         // Se llama para que aparezca en el main
         agent_enumerate_properties(device, NULL, NULL);
+        // -------------------------------------------------------------------------------- Iniciacion de propiedades de nombres
+        init_disp_properties(device);
         // -------------------------------------------------------------------------------- Iniciacion del mutex
         pthread_mutex_init(&PRIVATE_DATA->mutex, NULL);
     }
@@ -121,22 +243,24 @@ static indigo_result agent_enumerate_properties(indigo_device *device, indigo_cl
 static void agent_connect_callback(indigo_device *device)
 {
     CONNECTION_PROPERTY->state = INDIGO_OK_STATE;
+    agent_habilita_conf_properties(device, CONNECTION_CONNECTED_ITEM->sw.value);
     if (CONNECTION_CONNECTED_ITEM->sw.value)
     {
-        INDIGO_DRIVER_LOG(DRIVER_NAME, "Conectado");
-        if (server != NULL)
+        if (PRIVATE_DATA->current_disp > 0)
         {
-            conecta_all_cameras(&agent_client);
-            conecta_montura(&agent_client);
+            escribe_nueva_config(N_DISP_PROPERTY, prop_disp);
         }
-        else
-        {
-            if (connect_all_dev(&server) == INDIGO_OK)
+        assert(read_agent_conf());
+            indigo_usleep(ONE_SECOND_DELAY);
+
+        INDIGO_DRIVER_LOG(DRIVER_NAME, "Conectado");
+        
+            if (connect_config(&server) == INDIGO_OK)
             {
                 conecta_all_cameras(&agent_client);
                 conecta_montura(&agent_client);
             }
-        }
+        // -------------------------------------------------------------------------------- Define de las propiedades
         indigo_define_property(device, GANANCIA_PROPERTY, NULL);
         indigo_define_property(device, EXPOSICION_PROPERTY, NULL);
         indigo_define_property(device, REFRIG_STATUS_PROPERTY, NULL);
@@ -165,6 +289,12 @@ static void agent_connect_callback(indigo_device *device)
         EXPOSICION_PROPERTY->state = INDIGO_OK_STATE;
 
         indigo_update_property(device, EXPOSICION_PROPERTY, NULL);
+
+        CONF_PREV_PROPERTY_ITEM_OFF->sw.value = false;
+        CONF_PREV_PROPERTY_ITEM_ON->sw.value = true;
+        indigo_update_property(device, CONF_PREV_PROPERTY, NULL);
+
+
         indigo_delete_property(device, EXPOSICION_PROPERTY, NULL);
         indigo_delete_property(device, GANANCIA_PROPERTY, NULL);
 
@@ -175,7 +305,14 @@ static void agent_connect_callback(indigo_device *device)
         indigo_delete_property(device, URL_PROPERTY, NULL);
         indigo_delete_property(device, MONTURA_PARK_PROPERTY, NULL);
         indigo_delete_property(device, MONTURA_COORDENADAS_PROPERTY, NULL);
+        
 
+        // for(int i=0;i<num_devices;i++)
+        // {
+        //     indigo_disconnect_server(&indigo_available_servers[i]);  
+        // }
+
+        agent_delete_conf_properties(device);
         desconecta_all_cameras(&agent_client);
         desconecta_montura(&agent_client);
         INDIGO_DRIVER_LOG(DRIVER_NAME, "Desconectado");
@@ -400,8 +537,8 @@ static indigo_result agent_change_property(indigo_device *device, indigo_client 
         {
             // -------------------------------------------------------------------------------- Recibir actualizacion de coordenadas
             pthread_mutex_lock(&private_data->mutex);
-            
-            if(MONTURA_COORDENADAS_PROPERTY->state != INDIGO_ALERT_STATE)
+
+            if (MONTURA_COORDENADAS_PROPERTY->state != INDIGO_ALERT_STATE)
                 MONTURA_COORDENADAS_PROPERTY->state = property->state;
 
             MONTURA_COORDENADAS_RA_ITEM->number.value = property->items[0].number.value;
@@ -411,19 +548,139 @@ static indigo_result agent_change_property(indigo_device *device, indigo_client 
 
             pthread_mutex_unlock(&private_data->mutex);
         }
-        // -------------------------------------------------------------------------------- MONTURA
+        // -------------------------------------------------------------------------------- CONFIGURACION
         else if (indigo_property_match(CONF_PREV_PROPERTY, property))
         {
-            // -------------------------------------------------------------------------------- Cambiar las coordenadas
+            // -------------------------------------------------------------------------------- Cambiar de modo
             pthread_mutex_lock(&private_data->mutex);
+            if (CONF_PREV_PROPERTY->state != INDIGO_IDLE_STATE)
+            {
+                indigo_property_copy_values(CONF_PREV_PROPERTY, property, false);
 
-            indigo_property_copy_values(CONF_PREV_PROPERTY, property, false);
+                if (CONF_PREV_PROPERTY_ITEM_OFF->sw.value)
+                {
+                    agent_define_conf_properties(device);
+                }
+                else
+                    agent_delete_conf_properties(device);
 
-            if(CONF_PREV_PROPERTY_ITEM_OFF->sw.value)
-                agent_define_conf_properties(device);
-            
-            indigo_update_property(device, CONF_PREV_PROPERTY, NULL);
+                indigo_update_property(device, CONF_PREV_PROPERTY, NULL);
+            }
 
+            pthread_mutex_unlock(&private_data->mutex);
+        }
+        else if (indigo_property_match(N_DISP_PROPERTY, property))
+        {
+            // -------------------------------------------------------------------------------- Cambiar n_disp
+            pthread_mutex_lock(&private_data->mutex);
+            if (N_DISP_PROPERTY->state != INDIGO_IDLE_STATE)
+            {
+                indigo_property_copy_values(N_DISP_PROPERTY, property, false);
+
+                PRIVATE_DATA->target_disp = N_DISP_PROPERTY->items->number.value;
+
+                if (PRIVATE_DATA->target_disp > 7)
+                {
+                    N_DISP_PROPERTY->items->number.value = 7;
+                    PRIVATE_DATA->target_disp = 7;
+                }
+
+                if (PRIVATE_DATA->current_disp < PRIVATE_DATA->target_disp)
+                {
+                    for (int i = PRIVATE_DATA->current_disp; i < PRIVATE_DATA->target_disp; i++)
+                        muestra_x_disp(device, i);
+                }
+                else if (PRIVATE_DATA->current_disp > PRIVATE_DATA->target_disp)
+                {
+                    for (int i = PRIVATE_DATA->current_disp; i >= PRIVATE_DATA->target_disp; i--)
+                        oculta_x_disp(device, i);
+                }
+
+                PRIVATE_DATA->current_disp = PRIVATE_DATA->target_disp;
+                indigo_update_property(device, N_DISP_PROPERTY, NULL);
+            }
+
+            pthread_mutex_unlock(&private_data->mutex);
+        }
+        // -------------------------------------------------------------------------------- Cambiar valores textos
+        else if (indigo_property_match(DISP_0_PROPERTY, property))
+        {
+            pthread_mutex_lock(&private_data->mutex);
+            if (DISP_0_PROPERTY->state != INDIGO_IDLE_STATE)
+            {
+                indigo_property_copy_values(DISP_0_PROPERTY, property, false);
+                indigo_update_property(device, DISP_0_PROPERTY, NULL);
+            }
+            pthread_mutex_unlock(&private_data->mutex);
+        }
+        else if (indigo_property_match(DISP_1_PROPERTY, property))
+        {
+            pthread_mutex_lock(&private_data->mutex);
+            if (DISP_1_PROPERTY->state != INDIGO_IDLE_STATE)
+            {
+                indigo_property_copy_values(DISP_1_PROPERTY, property, false);
+                indigo_update_property(device, DISP_1_PROPERTY, NULL);
+            }
+            pthread_mutex_unlock(&private_data->mutex);
+        }
+        else if (indigo_property_match(DISP_2_PROPERTY, property))
+        {
+            pthread_mutex_lock(&private_data->mutex);
+            if (DISP_2_PROPERTY->state != INDIGO_IDLE_STATE)
+            {
+                indigo_property_copy_values(DISP_2_PROPERTY, property, false);
+                indigo_update_property(device, DISP_2_PROPERTY, NULL);
+            }
+            pthread_mutex_unlock(&private_data->mutex);
+        }
+        else if (indigo_property_match(DISP_3_PROPERTY, property))
+        {
+            pthread_mutex_lock(&private_data->mutex);
+            if (DISP_3_PROPERTY->state != INDIGO_IDLE_STATE)
+            {
+                indigo_property_copy_values(DISP_3_PROPERTY, property, false);
+                indigo_update_property(device, DISP_3_PROPERTY, NULL);
+            }
+            pthread_mutex_unlock(&private_data->mutex);
+        }
+        else if (indigo_property_match(DISP_4_PROPERTY, property))
+        {
+            pthread_mutex_lock(&private_data->mutex);
+            if (DISP_4_PROPERTY->state != INDIGO_IDLE_STATE)
+            {
+                indigo_property_copy_values(DISP_4_PROPERTY, property, false);
+                indigo_update_property(device, DISP_4_PROPERTY, NULL);
+            }
+            pthread_mutex_unlock(&private_data->mutex);
+        }
+        else if (indigo_property_match(DISP_5_PROPERTY, property))
+        {
+            pthread_mutex_lock(&private_data->mutex);
+            if (DISP_5_PROPERTY->state != INDIGO_IDLE_STATE)
+            {
+                indigo_property_copy_values(DISP_5_PROPERTY, property, false);
+                indigo_update_property(device, DISP_5_PROPERTY, NULL);
+            }
+            pthread_mutex_unlock(&private_data->mutex);
+        }
+        else if (indigo_property_match(DISP_6_PROPERTY, property))
+        {
+            pthread_mutex_lock(&private_data->mutex);
+            if (DISP_6_PROPERTY->state != INDIGO_IDLE_STATE)
+            {
+                indigo_property_copy_values(DISP_6_PROPERTY, property, false);
+                indigo_update_property(device, DISP_6_PROPERTY, NULL);
+            }
+            pthread_mutex_unlock(&private_data->mutex);
+        }
+        else if (indigo_property_match(DISP_7_PROPERTY, property))
+        {
+            pthread_mutex_lock(&private_data->mutex);
+            if (DISP_7_PROPERTY->state != INDIGO_IDLE_STATE)
+            {
+                indigo_property_copy_values(DISP_7_PROPERTY, property, false);
+                indigo_update_property(device, DISP_7_PROPERTY, NULL);
+            }
             pthread_mutex_unlock(&private_data->mutex);
         }
     }
@@ -446,7 +703,18 @@ static indigo_result agent_detach(indigo_device *device)
     indigo_release_property(REFRIG_STATUS_PROPERTY);
     indigo_release_property(REFRIG_POWER_PROPERTY);
     indigo_release_property(REFRIG_TEMP_PROPERTY);
+    indigo_release_property(MONTURA_COORDENADAS_PROPERTY);
+    indigo_release_property(MONTURA_PARK_PROPERTY);
+    indigo_release_property(CONF_PREV_PROPERTY);
     indigo_release_property(N_DISP_PROPERTY);
+    indigo_release_property(DISP_0_PROPERTY);
+    indigo_release_property(DISP_1_PROPERTY);
+    indigo_release_property(DISP_2_PROPERTY);
+    indigo_release_property(DISP_3_PROPERTY);
+    indigo_release_property(DISP_4_PROPERTY);
+    indigo_release_property(DISP_5_PROPERTY);
+    indigo_release_property(DISP_6_PROPERTY);
+    indigo_release_property(DISP_7_PROPERTY);
     INDIGO_DEVICE_DETACH_LOG(DRIVER_NAME, device->name);
     pthread_mutex_destroy(&PRIVATE_DATA->mutex);
     return indigo_device_detach(device);

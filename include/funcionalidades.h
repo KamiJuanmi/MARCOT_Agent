@@ -2,6 +2,10 @@
 
 extern int n_camaras;
 
+indigo_result connect_all_dev(indigo_server_entry**);
+
+indigo_result connect_config(indigo_server_entry**);
+
 void conecta_dispositivo(indigo_client *my_client, char* nom_disp);
 
 // Juanmi del pasado te amo por hacer esta funcion
