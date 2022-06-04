@@ -44,3 +44,12 @@ void set_RA_coord_montura(indigo_client *my_client, const double coord);
 void set_DEC_coord_montura(indigo_client *my_client, const double coord);
 
 void set_parking_montura(indigo_client *my_client, const bool value);
+
+void almacena_foto_disp(Dispositivo *disp, int n_disp);
+
+void almacena_todas_las_fotos();
+
+void procesa_fotos();
+// magick montage -label %f -frame 5 -background '#336699' -geometry +4+4 rose.jpg red-ball.png frame.jpg
+
+// montage -label %f -frame 7 -background '#451080' -geometry +2+2 -resize 10% img/img_disp_0.jpeg img/img_disp_1.jpeg img/img_disp_0.jpeg frame.jpg

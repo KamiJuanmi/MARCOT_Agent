@@ -32,6 +32,10 @@ extern "C" {
 
 #define URL_PROPERTY (PRIVATE_DATA->url_property)
 
+#define IMG_PROC_PROPERTY (PRIVATE_DATA->img_proc)
+#define IMG_PROC_PROPERTY_ITEM (IMG_PROC_PROPERTY->items + 0)
+
+
 #define REFRIG_POWER_PROPERTY (PRIVATE_DATA->refrig_power)
 #define REFRIG_POWER_PROPERTY_ITEM (REFRIG_POWER_PROPERTY->items + 0)
 
@@ -75,6 +79,8 @@ typedef struct
     indigo_property *exposicion_property;
     indigo_property *gain_property;
     indigo_property *url_property;
+    indigo_property *img_proc;
+    void *image_buffer;
 
     double current_disp, target_disp;
     indigo_property *conf_prev_property;

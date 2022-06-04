@@ -87,32 +87,6 @@ Dispositivo *get_disp_pos(const int pos){
     return stDisp[pos];
 }
 
-void almacena_foto(Dispositivo *disp)
-{
-    indigo_property *property = get_propiedad(disp, CCD_IMAGE_PROPERTY_NAME);
-    /* URL blob transfer is available only in client - server setup.
-           This will never be called in case of a client loading a driver. */
-    if (*property->items[0].blob.url && indigo_populate_http_blob_item(&property->items[0]))
-        indigo_log("image URL received (%s, %d bytes)...", property->items[0].blob.url, property->items[0].blob.size);
-    
-    if (property->items[0].blob.value)
-    {
-        int n_disp = hashCode(disp->nombre, SIZE);
-        char name[32];
-        sprintf(name, "./img/img_disp_%02d.jpeg", n_disp);
-        FILE *f = fopen(name, "wb");
-        fwrite(property->items[0].blob.value, property->items[0].blob.size, 1, f);
-        fclose(f);
-        indigo_log("image saved to %s...", name);
-        /* In case we have URL BLOB transfer we need to release the blob ourselves */
-        if (*property->items[0].blob.url)
-        {
-            free(property->items[0].blob.value);
-            property->items[0].blob.value = NULL;
-        }
-    }
-}
-
 void store_update_property(indigo_property *property, Dispositivo *disp)
 {
     int posicion_alm = searchIntHash(&disp->memoria_prop, property->name);

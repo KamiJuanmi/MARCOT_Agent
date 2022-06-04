@@ -108,8 +108,6 @@ static indigo_result oculta_x_disp(indigo_device *device, int value)
     indigo_delete_property(device, prop_disp.array[value].cont.propiedad, NULL);
 }
 
-
-
 static indigo_result agent_habilita_conf_properties(indigo_device *device, bool value)
 {
     if (value)
@@ -150,6 +148,38 @@ static indigo_result agent_habilita_conf_properties(indigo_device *device, bool 
     indigo_update_property(device, DISP_7_PROPERTY, NULL);
 }
 
+static indigo_result crea_prop_img_proc(indigo_device *device)
+{
+    IMG_PROC_PROPERTY = indigo_init_blob_property(NULL, device->name, "Imagen procesada", GRUPO_CONTROL_CAMARA, "Imagen procesada", INDIGO_OK_STATE, 1);
+    if (IMG_PROC_PROPERTY == NULL)
+        return INDIGO_FAILED;
+    indigo_init_blob_item(IMG_PROC_PROPERTY_ITEM, CCD_IMAGE_ITEM_NAME, "Imagen procesada");
+    indigo_define_property(device, IMG_PROC_PROPERTY, NULL);
+
+    char *file_name = "img/img_proc.jpeg";
+    FILE *in = fopen(file_name, "rb");
+    fseek(in, 0, SEEK_END);
+    long fsize = ftell(in);
+    fseek(in, 0, SEEK_SET);
+    FILE *out = fopen("PRUEBA.jpeg", "wb");
+    char buf[fsize];
+    size_t bytes_read;
+    IMG_PROC_PROPERTY_ITEM->blob.
+    IMG_PROC_PROPERTY_ITEM->blob.size = fsize;
+    strcpy(IMG_PROC_PROPERTY_ITEM->blob.format, ".jpeg");
+    // Read a buffer sized hunk.
+    while ((bytes_read = fread(IMG_PROC_PROPERTY_ITEM->blob.value, 1, fsize, in)))
+    {
+        // Write the hunk, but only as much as was read.
+        indigo_log("Leo");
+        fwrite(IMG_PROC_PROPERTY_ITEM->blob.value, 1, bytes_read, out);
+    }
+    fclose(in);
+    fclose(out);
+
+    indigo_update_property(device, IMG_PROC_PROPERTY, NULL);
+}
+
 static indigo_result agent_attach(indigo_device *device)
 {
     assert(device != NULL);
@@ -179,10 +209,10 @@ static indigo_result agent_attach(indigo_device *device)
         REFRIG_STATUS_PROPERTY = indigo_init_switch_property(NULL, device->name, "Refrigeracion on/off", GRUPO_REFRIGERACION, "Refrigeracion on/off", INDIGO_OK_STATE, INDIGO_RW_PERM, INDIGO_ONE_OF_MANY_RULE, 2);
         if (REFRIG_STATUS_PROPERTY == NULL)
             return INDIGO_FAILED;
-        indigo_init_switch_item(REFRIG_STATUS_PROPERTY_ITEM_ON, CCD_COOLER_ON_ITEM_NAME, "Encendida", true);
-        indigo_init_switch_item(REFRIG_STATUS_PROPERTY_ITEM_OFF, CCD_COOLER_OFF_ITEM_NAME, "Apagada", false);
+        indigo_init_switch_item(REFRIG_STATUS_PROPERTY_ITEM_ON, CCD_COOLER_ON_ITEM_NAME, "Encendida", false);
+        indigo_init_switch_item(REFRIG_STATUS_PROPERTY_ITEM_OFF, CCD_COOLER_OFF_ITEM_NAME, "Apagada", true);
         // -------------------------------------------------------------------------------- Potencia de refrigeracion
-        REFRIG_POWER_PROPERTY = indigo_init_number_property(NULL, device->name, "Potencia", GRUPO_REFRIGERACION, "Potencia refrigeracion", INDIGO_OK_STATE, INDIGO_RO_PERM, 1);
+        REFRIG_POWER_PROPERTY = indigo_init_number_property(NULL, device->name, "Potencia", GRUPO_REFRIGERACION, "Potencia refrigeracion", INDIGO_IDLE_STATE, INDIGO_RO_PERM, 1);
         if (REFRIG_POWER_PROPERTY == NULL)
             return INDIGO_FAILED;
         indigo_init_number_item(REFRIG_POWER_PROPERTY_ITEM, "Potencia", "Potencia (%)", 0, 100, 1, 0);
@@ -251,15 +281,15 @@ static void agent_connect_callback(indigo_device *device)
             escribe_nueva_config(N_DISP_PROPERTY, prop_disp);
         }
         assert(read_agent_conf());
-            indigo_usleep(ONE_SECOND_DELAY);
+        indigo_usleep(ONE_SECOND_DELAY);
 
         INDIGO_DRIVER_LOG(DRIVER_NAME, "Conectado");
-        
-            if (connect_config(&server) == INDIGO_OK)
-            {
-                conecta_all_cameras(&agent_client);
-                conecta_montura(&agent_client);
-            }
+
+        if (connect_config(&server) == INDIGO_OK)
+        {
+            conecta_all_cameras(&agent_client);
+            conecta_montura(&agent_client);
+        }
         // -------------------------------------------------------------------------------- Define de las propiedades
         indigo_define_property(device, GANANCIA_PROPERTY, NULL);
         indigo_define_property(device, EXPOSICION_PROPERTY, NULL);
@@ -294,7 +324,6 @@ static void agent_connect_callback(indigo_device *device)
         CONF_PREV_PROPERTY_ITEM_ON->sw.value = true;
         indigo_update_property(device, CONF_PREV_PROPERTY, NULL);
 
-
         indigo_delete_property(device, EXPOSICION_PROPERTY, NULL);
         indigo_delete_property(device, GANANCIA_PROPERTY, NULL);
 
@@ -305,11 +334,10 @@ static void agent_connect_callback(indigo_device *device)
         indigo_delete_property(device, URL_PROPERTY, NULL);
         indigo_delete_property(device, MONTURA_PARK_PROPERTY, NULL);
         indigo_delete_property(device, MONTURA_COORDENADAS_PROPERTY, NULL);
-        
 
         // for(int i=0;i<num_devices;i++)
         // {
-        //     indigo_disconnect_server(&indigo_available_servers[i]);  
+        //     indigo_disconnect_server(&indigo_available_servers[i]);
         // }
 
         agent_delete_conf_properties(device);
@@ -391,8 +419,14 @@ static indigo_result agent_change_property(indigo_device *device, indigo_client 
             if (property->state == INDIGO_OK_STATE)
             {
                 strcpy(URL_PROPERTY->items[posicion_url].text.value, property->items[0].blob.url);
+
                 // Aprovecho que tengo un mutex y esto no se va a incrementar mas de lo debido
                 posicion_url += 1;
+                if (posicion_url == n_camaras)
+                {
+                    almacena_todas_las_fotos();
+                    crea_prop_img_proc(device);
+                }
                 posicion_url %= n_camaras;
             }
             indigo_update_property(device, URL_PROPERTY, NULL);

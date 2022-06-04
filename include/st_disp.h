@@ -28,8 +28,6 @@ Array get_todo_mismo_tipo(const int type);
 
 Dispositivo *get_disp_pos(const int pos);
 
-void almacena_foto(Dispositivo *disp);
-
 void store_update_property(indigo_property *property, Dispositivo* disp);
 
 indigo_property *get_propiedad(Dispositivo *disp, const char* nombre);

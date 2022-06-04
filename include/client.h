@@ -70,7 +70,8 @@ static indigo_result my_update_property(indigo_client *client,
 
     if (!strcmp(property->name, CCD_IMAGE_PROPERTY_NAME))
     {
-        almacena_foto(entrada);
+        int n_disp = hashCode(disp->nombre, SIZE);
+        almacena_foto_disp(entrada, n_disp);
     }
 
     return INDIGO_OK;

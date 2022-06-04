@@ -15,16 +15,7 @@ int main(int argc, const char * argv[]) {
 	indigo_xml_parse(NULL, protocol_adapter);
 	indigo_simple_driver(INDIGO_DRIVER_SHUTDOWN, NULL);
 	indigo_stop();
-    // FILE *fp = abrir_conf_n_disp(8);
-    // escribe_host_port(fp, "indigo_0", 8000);
-    // escribe_host_port(fp, "indigo_0", 8000);
-    // escribe_host_port(fp, "indigo_0", 8000);
-    // escribe_host_port(fp, "indigo_0", 8000);
-    // escribe_host_port(fp, "indigo_0", 8000);
-    // escribe_host_port(fp, "indigo_0", 8000);
-    // escribe_host_port(fp, "indigo_0", 8000);
-    // fclose(fp);
-    // read_agent_conf();
+    
 
 	return 0;
 }
