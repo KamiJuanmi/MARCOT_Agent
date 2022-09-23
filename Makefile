@@ -44,7 +44,9 @@ SRC_2 := $(filter-out $(SRC_DIR)/client_main.c, $(wildcard $(SRC_DIR)/*.c))
 OBJ_2 := $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SRC_2))
 EXE_2 := $(BIN_DIR)/agent
 
+# A la hora de lanzar el agente se debe de lanzar con la orden indigo_server -p 8008 -i ./bin/agent
 agent: $(EXE_2)
+# A la hora de ejecutar el cliente se ha de lanzar ./bin/cliente
 cliente: $(EXE)
 
 $(EXE): $(OBJ) | $(BIN_DIR)
@@ -65,4 +67,4 @@ $(BIN_DIR):
 clean:
 	@$(RM) -rv $(BIN_DIR) $(OBJ_DIR)
 
-.PHONY: cliente driver clean
+.PHONY: cliente agent clean

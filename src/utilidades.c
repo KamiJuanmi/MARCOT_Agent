@@ -180,16 +180,16 @@ int read_json_client(void)
 
     parsed_json = json_tokener_parse(buffer);
 
-    // struct json_object *number_devices;
+    struct json_object *number_devices;
 
-    // if (!json_object_object_get_ex(parsed_json, "number_devices", &number_devices))
-    // {
-    //     printf("Error al extraer el numero de dispositivos del fichero JSON\n");
-    // }
-    // else
-    // {
-    //     num_devices = json_object_get_int(number_devices);
-    // }
+    if (!json_object_object_get_ex(parsed_json, "number_devices", &number_devices))
+    {
+        printf("Error al extraer el numero de dispositivos del fichero JSON\n");
+    }
+    else
+    {
+        num_devices = json_object_get_int(number_devices);
+    }
 
     struct json_object *devices;
     struct array_list *dispositivos;

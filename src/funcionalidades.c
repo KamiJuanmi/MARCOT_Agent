@@ -326,6 +326,8 @@ void almacena_foto_disp(Dispositivo *disp, int n_disp)
            This will never be called in case of a client loading a driver. */
     if (*property->items[0].blob.url && indigo_populate_http_blob_item(&property->items[0]))
         indigo_log("image URL received (%s, %d bytes)...", property->items[0].blob.url, property->items[0].blob.size);
+    
+        
     if (property->items[0].blob.value)
     {
         char name[50];
@@ -341,6 +343,7 @@ void almacena_foto_disp(Dispositivo *disp, int n_disp)
             property->items[0].blob.value = NULL;
         }
     }
+    
 }
 
 void almacena_todas_las_fotos()
@@ -354,6 +357,7 @@ void almacena_todas_las_fotos()
         int posicion = posiciones.array[i].cont.num_array;
         almacena_foto_disp(get_disp_pos(posicion), i);
     }
+    
     freeArray(&posiciones);
     procesa_fotos();
 }

@@ -1,9 +1,5 @@
-/** Prueba de desarollo de un driver
- \file indigo_simple_driver.c
- */
-
 #define DRIVER_VERSION 0x0000
-#define DRIVER_NAME "Junamis"
+#define DRIVER_NAME "Juanmi driver"
 
 #include <stdlib.h>
 #include <string.h>
@@ -153,29 +149,31 @@ static indigo_result crea_prop_img_proc(indigo_device *device)
     IMG_PROC_PROPERTY = indigo_init_blob_property(NULL, device->name, "Imagen procesada", GRUPO_CONTROL_CAMARA, "Imagen procesada", INDIGO_OK_STATE, 1);
     if (IMG_PROC_PROPERTY == NULL)
         return INDIGO_FAILED;
-    indigo_init_blob_item(IMG_PROC_PROPERTY_ITEM, CCD_IMAGE_ITEM_NAME, "Imagen procesada");
+    indigo_init_blob_item(IMG_PROC_PROPERTY_ITEM, "Imagen procesada", "Imagen procesada");
     indigo_define_property(device, IMG_PROC_PROPERTY, NULL);
 
     char *file_name = "img/img_proc.jpeg";
     FILE *in = fopen(file_name, "rb");
+
     fseek(in, 0, SEEK_END);
     long fsize = ftell(in);
     fseek(in, 0, SEEK_SET);
-    FILE *out = fopen("PRUEBA.jpeg", "wb");
+
     char buf[fsize];
     size_t bytes_read;
-    IMG_PROC_PROPERTY_ITEM->blob.
+
+    bytes_read = fread(buf, 1, fsize, in);
+    if (bytes_read != fsize)
+        return;
+        
+    IMG_PROC_PROPERTY_ITEM->blob.value=buf;
+
     IMG_PROC_PROPERTY_ITEM->blob.size = fsize;
     strcpy(IMG_PROC_PROPERTY_ITEM->blob.format, ".jpeg");
-    // Read a buffer sized hunk.
-    while ((bytes_read = fread(IMG_PROC_PROPERTY_ITEM->blob.value, 1, fsize, in)))
-    {
-        // Write the hunk, but only as much as was read.
-        indigo_log("Leo");
-        fwrite(IMG_PROC_PROPERTY_ITEM->blob.value, 1, bytes_read, out);
-    }
+
+    IMG_PROC_PROPERTY->state = INDIGO_OK_STATE;
+
     fclose(in);
-    fclose(out);
 
     indigo_update_property(device, IMG_PROC_PROPERTY, NULL);
 }
@@ -334,11 +332,6 @@ static void agent_connect_callback(indigo_device *device)
         indigo_delete_property(device, URL_PROPERTY, NULL);
         indigo_delete_property(device, MONTURA_PARK_PROPERTY, NULL);
         indigo_delete_property(device, MONTURA_COORDENADAS_PROPERTY, NULL);
-
-        // for(int i=0;i<num_devices;i++)
-        // {
-        //     indigo_disconnect_server(&indigo_available_servers[i]);
-        // }
 
         agent_delete_conf_properties(device);
         desconecta_all_cameras(&agent_client);
@@ -781,7 +774,7 @@ static indigo_result agent_client_update_property(indigo_client *client,
     return INDIGO_OK;
 }
 
-indigo_result indigo_simple_driver(indigo_driver_action action, indigo_driver_info *info)
+indigo_result agent_function(indigo_driver_action action, indigo_driver_info *info)
 {
     static indigo_device agent_template = INDIGO_DEVICE_INITIALIZER(
         "MARCOT",

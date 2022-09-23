@@ -1,5 +1,5 @@
 {
-    "number_devices": 4,
+    "number_devices": 5,
     "devices": [
         {
             "names": [
@@ -27,6 +27,5 @@
         }
     ]
 }
-
 
 

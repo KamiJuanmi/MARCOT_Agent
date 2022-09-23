@@ -1,8 +1,4 @@
 
-/** Prueba de desarollo de un driver
- \file indigo_simple_driver.h
- */
-
 #ifndef simple_driver_h
 #define simple_driver_h
 

@@ -63,14 +63,14 @@ static indigo_result my_update_property(indigo_client *client,
         entrada = search(property->device);
     }
 
-    if(property_match(property->name, entrada->type))
+    if(property_match(property->name, entrada->type) && entrada->type==0)
     {
         store_update_property(property, entrada);
     }
 
     if (!strcmp(property->name, CCD_IMAGE_PROPERTY_NAME))
     {
-        int n_disp = hashCode(disp->nombre, SIZE);
+        int n_disp = hashCode(entrada->nombre, SIZE);
         almacena_foto_disp(entrada, n_disp);
     }
 
@@ -97,5 +97,3 @@ static indigo_client my_client = {
     NULL,
     NULL,
     my_detach};
-
-static indigo_server_entry *server;
